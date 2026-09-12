@@ -1,0 +1,23 @@
+# Normalisasi line ending lintas platform
+# Simpan di repositori sebagai LF, checkout sesuai OS (aman untuk Windows).
+* text=auto eol=lf
+
+# Berkas biner — jangan diubah
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+
+# Lockfile & snapshot — perlakukan sebagai teks agar diff terbaca
+package-lock.json text eol=lf
+
+# Script shell & Docker harus LF
+*.sh text eol=lf
+Dockerfile text eol=lf
