@@ -375,6 +375,17 @@ section#kosakata::before {
 .font-arab {
   font-family: 'Amiri', serif;
 }
+.hero-arab {
+  line-height: 1.4;
+  padding: 0.08em 0 0.14em;
+}
+@media (min-width: 1024px) {
+  .hero-arab {
+    line-height: 1.5;
+    padding-top: 0.12em;
+    padding-bottom: 0.18em;
+  }
+}
 .chat-ar {
   direction: rtl;
   text-align: right;
@@ -654,4 +665,717 @@ section#kosakata::before {
   .admin-stats {
     gap: 0;
   }
+}
+/* Admin workspace — tema gelap (class "dark" dipasang oleh assets/js/theme.js) */
+body.dark.admin-body {
+  background: linear-gradient(180deg, #0b1116 0%, #111827 35%, #0f172a 100%);
+  color: #e7e5e4;
+}
+body.dark.admin-body .pattern-bg {
+  opacity: 0.18;
+  background-image:
+    radial-gradient(circle at 8% 0%, rgba(24, 102, 80, 0.28), transparent 28%),
+    linear-gradient(135deg, rgba(28, 25, 23, 0.92), rgba(12, 17, 22, 0.72));
+}
+body.dark .admin-kicker,
+body.dark .admin-section-label {
+  color: #8fb5a8;
+}
+body.dark .admin-topbar h2 {
+  color: #f5f5f4;
+}
+body.dark .admin-subtitle {
+  color: #a8a29e;
+}
+body.dark .admin-status {
+  border-color: #44403c;
+  background: rgba(41, 37, 36, 0.72);
+  color: #d6d3d1;
+}
+body.dark .admin-stat {
+  border-color: #44403c;
+  background: rgba(28, 25, 23, 0.83);
+  box-shadow: 0 15px 35px -30px rgba(0, 0, 0, 0.9);
+}
+body.dark .admin-stat-highlight {
+  background: #1c3a31;
+  border-color: #2c5a4b;
+}
+body.dark .admin-stat-label {
+  color: #a8a29e;
+}
+body.dark .admin-stat strong {
+  color: #f5f5f4;
+}
+body.dark .admin-stat small {
+  color: #78716c;
+}
+body.dark .admin-panel {
+  border-color: #44403c !important;
+  box-shadow: 0 22px 55px -38px rgba(0, 0, 0, 0.85) !important;
+}
+body.dark .admin-panel-heading {
+  border-bottom-color: #292524;
+}
+body.dark .admin-panel h3 {
+  color: #f5f5f4;
+}
+body.dark .admin-form-panel {
+  background: #1c1917 !important;
+}
+body.dark .admin-form-panel input,
+body.dark .admin-form-panel select,
+body.dark .admin-form-panel textarea {
+  border-color: #44403c;
+  background: #0c0a09;
+  color: #f5f5f4;
+}
+body.dark .admin-body .bg-white,
+body.dark .admin-body .bg-white\/90,
+body.dark .admin-body .bg-white\/80 {
+  background-color: #1c1917 !important;
+}
+body.dark .admin-body .text-stone-900 {
+  color: #f5f5f4 !important;
+}
+body.dark .admin-body .text-stone-500,
+body.dark .admin-body .text-stone-600,
+body.dark .admin-body .text-stone-700 {
+  color: #a8a29e !important;
+}
+body.dark .admin-body .border-emerald-900\/10 {
+  border-color: #44403c !important;
+}
+/* =============================================
+   Pemilih & pengunggah audio admin (tema terang)
+   ============================================= */
+.admin-audio-field {
+  display: grid;
+  gap: 8px;
+}
+.admin-audio-row {
+  display: flex;
+  gap: 8px;
+}
+.admin-audio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.admin-audio-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #cfe0d8;
+  border-radius: 9px;
+  background: #fff;
+  color: #125443;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+.admin-audio-btn:hover {
+  background: #e9f3ee;
+  border-color: #1a7f5a;
+}
+.admin-audio-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 10px;
+  background: #0f7654;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.admin-audio-hint {
+  margin: 0;
+  color: #8a9a94;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.admin-audio-preview {
+  display: grid;
+  gap: 8px;
+}
+.admin-audio-preview:empty {
+  display: none;
+}
+.admin-audio-preview audio {
+  width: 100%;
+  height: 34px;
+}
+.audio-preview-link {
+  color: #1a7f5a;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.audio-preview-empty {
+  color: #8a9a94;
+  font-size: 11px;
+}
+.audio-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15, 27, 23, 0.55);
+  backdrop-filter: blur(3px);
+}
+.audio-picker.hidden {
+  display: none;
+}
+.audio-picker-dialog {
+  width: min(920px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #dce8e3;
+  padding: 18px;
+  opacity: 0.4;
+  transform: translateY(8px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+.audio-picker-dialog.is-open {
+  opacity: 1;
+  transform: none;
+}
+.audio-picker-head,
+.audio-picker-head,
+.audio-picker-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.audio-picker-title {
+  margin: 0;
+  color: #10352b;
+  font-size: 15px;
+  font-weight: 800;
+}
+.audio-picker-sub {
+  margin: 4px 0 0;
+  color: #7b8f87;
+  font-size: 11px;
+}
+.audio-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.audio-library-card {
+  display: grid;
+  gap: 8px;
+  border: 1px solid #e2ebe7;
+  border-radius: 12px;
+  background: #f8fbfa;
+  padding: 10px;
+}
+.audio-library-card audio {
+  width: 100%;
+  height: 30px;
+}
+.audio-library-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2c4a41;
+  overflow-wrap: anywhere;
+}
+.audio-library-status {
+  color: #7b8f87;
+  font-size: 11px;
+  font-weight: 700;
+}
+.audio-picker-search {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.audio-picker-search input {
+  flex: 1 1 auto;
+  border: 1px solid #dce8e3;
+  border-radius: 10px;
+  padding: 9px 11px;
+  font-size: 12px;
+}
+.audio-library-pick {
+  border: 0;
+  border-radius: 9px;
+  background: #0f7654;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.audio-library-pick.is-selected {
+  background: #c9a227;
+  color: #241c05;
+}
+body.dark .admin-audio-btn {
+  background: #292524;
+  border-color: #44403c;
+  color: #d6f5e9;
+}
+body.dark .admin-audio-btn:hover {
+  background: #383230;
+  border-color: #2f8a68;
+}
+body.dark .admin-audio-hint,
+body.dark .audio-preview-empty,
+body.dark .audio-library-status,
+body.dark .audio-picker-sub {
+  color: #a8a29e;
+}
+body.dark .audio-picker-dialog {
+  background: #1c1917;
+  border-color: #44403c;
+}
+body.dark .audio-picker-title,
+body.dark .audio-library-name {
+  color: #f5f5f4;
+}
+body.dark .audio-library-card {
+  background: #0c0a09;
+  border-color: #44403c;
+}
+body.dark .audio-picker-search input {
+  background: #0c0a09;
+  border-color: #44403c;
+  color: #f5f5f4;
+}
+/* =============================================
+   Studio audio admin (unggah massal & rekam) — tema terang
+   ============================================= */
+.admin-audio-drop {
+  display: grid;
+  gap: 6px;
+  place-items: center;
+  padding: 22px 16px;
+  border: 2px dashed #cfe0d8;
+  border-radius: 14px;
+  background: #f7fbf9;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+.admin-audio-drop:hover,
+.admin-audio-drop.is-drag {
+  background: #e9f3ee;
+  border-color: #1a7f5a;
+}
+.admin-audio-drop i {
+  font-size: 20px;
+  color: #1a7f5a;
+}
+.audio-drop-title {
+  color: #163b31;
+  font-size: 13px;
+  font-weight: 800;
+}
+.admin-audio-filelist {
+  display: grid;
+  gap: 6px;
+}
+.admin-audio-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e2ebe7;
+  border-radius: 10px;
+  background: #f8fbfa;
+  font-size: 11px;
+}
+.admin-audio-file i {
+  color: #1a7f5a;
+}
+.admin-audio-file-name {
+  flex: 1 1 160px;
+  color: #2c4a41;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.admin-audio-file-rename {
+  color: #8a9a94;
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+.admin-audio-file-size,
+.admin-audio-file-state {
+  color: #7b8f87;
+  font-weight: 700;
+}
+.admin-audio-file.is-done {
+  border-color: #b9e0cd;
+  background: #eef8f2;
+}
+.admin-audio-file.is-error {
+  border-color: #f0c8c8;
+  background: #fdf3f3;
+}
+.admin-audio-file.is-error .admin-audio-file-state {
+  color: #a13333;
+}
+.admin-audio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.admin-audio-search {
+  margin-top: 0;
+}
+.admin-audio-search input {
+  min-width: 200px;
+}
+.audio-library-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+body.dark .admin-audio-drop {
+  border-color: #44403c;
+  background: #181614;
+  color: #e7e5e4;
+}
+body.dark .admin-audio-drop:hover,
+body.dark .admin-audio-drop.is-drag {
+  background: #221f1d;
+  border-color: #2f8a68;
+}
+body.dark .audio-drop-title {
+  color: #f5f5f4;
+}
+body.dark .admin-audio-file {
+  border-color: #44403c;
+  background: #0c0a09;
+}
+body.dark .admin-audio-file-name {
+  color: #e7e5e4;
+}
+body.dark .admin-audio-file.is-done {
+  background: #12241d;
+  border-color: #2c5a4b;
+}
+body.dark .admin-audio-file.is-error {
+  background: #2a1a1a;
+  border-color: #6f3a3a;
+}
+
+/* =============================================
+   ADMIN UI v2 — modern & profesional
+   ============================================= */
+.admin-body {
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(16, 185, 129, 0.1), transparent 60%),
+    radial-gradient(900px 420px at -10% 110%, rgba(201, 162, 39, 0.08), transparent 55%), #f4f6f5;
+}
+body.dark.admin-body {
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(16, 185, 129, 0.12), transparent 60%),
+    radial-gradient(900px 420px at -10% 110%, rgba(201, 162, 39, 0.07), transparent 55%), #0b1116;
+}
+/* --- Sidebar: gelap, glass, kontras --- */
+.admin-rail {
+  position: sticky;
+  top: 24px;
+  height: fit-content;
+  border-radius: 22px;
+  padding: 22px 16px;
+  background: linear-gradient(180deg, #0d3a2d 0%, #0a2e24 60%, #082019 100%);
+  color: #d9ebe4;
+  box-shadow:
+    0 30px 60px -30px rgba(6, 46, 38, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.admin-brand {
+  padding: 0 6px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.admin-brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #e2bc55, #b98f1d);
+  color: #0a2e24;
+  font-size: 24px;
+  box-shadow: 0 10px 22px -10px rgba(201, 162, 39, 0.7);
+}
+.admin-brand strong {
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+.admin-brand div span {
+  color: #8fb5a8;
+  font-size: 10px;
+}
+.admin-nav {
+  gap: 4px;
+  margin-top: 20px;
+}
+.admin-nav a {
+  position: relative;
+  border-radius: 11px;
+  padding: 11px 12px;
+  color: #9cc4b6;
+  font-size: 12.5px;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+.admin-nav a:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #eafff5;
+  transform: translateX(2px);
+}
+.admin-nav a.active {
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.06));
+  color: #f6e3a8;
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.35);
+}
+.admin-nav a.active::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 20%;
+  bottom: 20%;
+  width: 4px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #e2bc55, #c9a227);
+}
+.admin-rail-note {
+  display: flex;
+  color: #79a393;
+  font-size: 10.5px;
+}
+/* --- Topbar --- */
+.admin-topbar h2 {
+  background: linear-gradient(90deg, #14332a, #2b6a52);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.dark .admin-topbar h2 {
+  background: linear-gradient(90deg, #f5f5f4, #9fe3c8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.admin-logout {
+  border-radius: 11px;
+  background: #14332a;
+  padding: 9px 14px;
+  font-size: 11px;
+  box-shadow: 0 12px 24px -14px rgba(20, 51, 42, 0.8);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+.admin-logout:hover {
+  background: #0d4a37;
+  transform: translateY(-1px);
+}
+/* --- Kartu statistik --- */
+.admin-stats {
+  gap: 14px;
+  margin-top: 26px;
+  border: 0;
+  background: transparent;
+}
+.admin-stat {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(16, 185, 129, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20px 45px -32px rgba(10, 46, 36, 0.65);
+  padding: 18px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.admin-stat:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 28px 55px -30px rgba(10, 46, 36, 0.75);
+}
+.admin-stat::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #10b981, #c9a227);
+  opacity: 0.85;
+}
+.admin-stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  font-size: 14px;
+  background: linear-gradient(135deg, #e7f6ee, #d3eee1) !important;
+  color: #0f7654 !important;
+  box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.2);
+}
+.admin-stat-icon.gold {
+  background: linear-gradient(135deg, #faf0d2, #f1debd) !important;
+  color: #9a7620 !important;
+}
+.admin-stat-icon.blue {
+  background: linear-gradient(135deg, #e3eef6, #d6e6f2) !important;
+  color: #3f718d !important;
+}
+.admin-stat-icon.dark {
+  background: linear-gradient(135deg, #1d4c3f, #14332a) !important;
+  color: #f1d27e !important;
+}
+.admin-stat strong {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+.admin-stat small {
+  font-size: 10px;
+}
+body.dark .admin-stat {
+  background: rgba(17, 24, 30, 0.86);
+  border-color: rgba(16, 185, 129, 0.22);
+}
+/* --- Panel & form --- */
+.admin-panel {
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(16, 185, 129, 0.14) !important;
+  box-shadow: 0 26px 60px -40px rgba(10, 46, 36, 0.7) !important;
+}
+body.dark .admin-panel {
+  background: rgba(17, 24, 30, 0.92) !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+.admin-panel h3 {
+  letter-spacing: -0.01em;
+}
+.admin-form-panel {
+  background: linear-gradient(
+    180deg,
+    rgba(247, 251, 249, 0.95),
+    rgba(255, 255, 255, 0.92)
+  ) !important;
+}
+body.dark .admin-form-panel {
+  background: #131b17 !important;
+}
+.admin-panel input,
+.admin-panel select,
+.admin-panel textarea {
+  border-radius: 11px !important;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.admin-panel input:focus,
+.admin-panel select:focus,
+.admin-panel textarea:focus {
+  outline: none;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14);
+}
+.admin-panel button[type='submit'],
+.admin-panel .bg-emerald-700 {
+  background: linear-gradient(135deg, #0f7654, #0a5c40) !important;
+  box-shadow: 0 16px 30px -16px rgba(15, 118, 84, 0.75);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+.admin-panel button[type='submit']:hover,
+.admin-panel .bg-emerald-700:hover {
+  background: linear-gradient(135deg, #0d8a62, #0b6b4b) !important;
+  transform: translateY(-1px);
+}
+.admin-panel button[data-action] {
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+.admin-panel button[data-action]:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+/* --- Tabel dialog --- */
+.admin-panel table th {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+/* --- Login screen --- */
+#loginScreen .max-w-md {
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 40px 90px -40px rgba(6, 46, 38, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+body.dark #loginScreen .max-w-md {
+  background: rgba(17, 24, 30, 0.94);
+}
+#loginScreen h1 {
+  letter-spacing: -0.02em;
+}
+#loginScreen input {
+  border-radius: 14px !important;
+  padding: 12px 16px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+#loginScreen input:focus {
+  outline: none;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+}
+#loginForm button[type='submit'] {
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #0f7654, #0a5c40) !important;
+  box-shadow: 0 18px 34px -16px rgba(15, 118, 84, 0.8);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+#loginForm button[type='submit']:hover {
+  background: linear-gradient(135deg, #0d8a62, #0b6b4b) !important;
+  transform: translateY(-1px);
+}
+/* --- Scrollbar halus di area admin --- */
+.admin-main ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.admin-main ::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.35);
+  border-radius: 99px;
 }

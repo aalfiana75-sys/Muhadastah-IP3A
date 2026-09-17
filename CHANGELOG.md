@@ -27,6 +27,17 @@ dan proyek ini menganut [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Added
 
+- Halaman **Studio audio** (`admin-audio.html` + `assets/js/admin-audio-studio.js`):
+  impor beberapa berkas sekaligus lewat drag & drop, ganti nama sebelum unggah, rekam
+  langsung dari mikrofon (MediaRecorder), pemantauan status per berkas, serta pemasangan
+  audio dari pustaka ke baris percakapan atau kosakata.
+- Admin bisa **mengimpor berkas audio** (mp3/wav/ogg/m4a) langsung dari form baris
+  percakapan dan kosakata; berkas diunggah ke bucket Supabase Storage `dialog-audio`
+  (`assets/js/admin-audio.js`).
+- Modal **Pustaka audio** untuk memilih audio yang sudah ada di Storage tanpa mengunggah
+  ulang, plus pratinjau pemutar audio di setiap kolom URL audio.
+- Kolom `vocab.audio_ar_url` dan bucket Storage `dialog-audio` + policies RLS-nya pada
+  `supabase/schema.sql`.
 - Dokumentasi profesional: `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`,
   dan `CHANGELOG.md`.
 - Tooling pengembangan: `package.json` (skrip dev/lint/format), `eslint.config.mjs`,

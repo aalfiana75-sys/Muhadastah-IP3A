@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="id" id="htmlRoot">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Tabel kosakata Bahasa Arab, Inggris, dan Indonesia." />
+    <title>Kosakata | Muhadatsah</title>
+    <script>
+      tailwind = {
+        config: {
+          darkMode: 'class',
+          theme: {
+            extend: {
+              colors: {
+                emeraldDeep: '#062e26',
+                gold: '#c9a227',
+                goldLight: '#f3d27a',
+                cream: '#faf7ef'
+              },
+              fontFamily: {
+                arab: ['Amiri', 'serif'],
+                sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+              },
+              boxShadow: {
+                soft: '0 20px 60px -20px rgba(6,46,38,.35)'
+              }
+            }
+          }
+        }
+      };
+      (function () {
+        var dark = localStorage.getItem('muhadatsah_theme') === 'dark';
+        document.documentElement.classList.toggle('dark', dark);
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      body.vocab-page {
+        background: linear-gradient(180deg, #f8f3eb 0%, #f4faf7 35%, #f7f5f3 100%) !important;
+        color: #1c1917 !important;
+      }
+
+      body.vocab-page.dark {
+        background: linear-gradient(180deg, #0b1116 0%, #111827 35%, #0f172a 100%) !important;
+        color: #f5f5f4 !important;
+      }
+
+      body.vocab-page:not(.dark) header {
+        background: rgba(255, 255, 255, 0.8);
+        border-color: rgba(6, 95, 70, 0.1);
+      }
+
+      body.vocab-page.dark header {
+        background: rgba(12, 10, 9, 0.8);
+      }
+
+      body.vocab-page:not(.dark) header a.bg-gold {
+        color: #1c1917;
+      }
+
+      body.vocab-page:not(.dark) header a.bg-emerald-700,
+      body.vocab-page:not(.dark) #mobileMenu a.bg-emerald-700 {
+        color: #fff !important;
+      }
+
+      .vocab-logo {
+        color: #c9a227 !important;
+      }
+
+      body.vocab-page:not(.dark) #mobileMenu {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(6, 95, 70, 0.1);
+      }
+
+      body.vocab-page:not(.dark) #mobileMenu a {
+        color: #374151;
+      }
+
+      body.vocab-page:not(.dark) #mobileMenu a.bg-gold {
+        color: #1c1917;
+      }
+
+      body.vocab-page:not(.dark) .text-white\/60,
+      body.vocab-page:not(.dark) .text-white\/70,
+      body.vocab-page:not(.dark) .text-white\/75,
+      body.vocab-page:not(.dark) .text-white\/80,
+      body.vocab-page:not(.dark) .text-white\/90,
+      body.vocab-page:not(.dark) .text-white {
+        color: #374151 !important;
+      }
+
+      body.vocab-page:not(.dark) .text-goldLight {
+        color: #8d6a1d !important;
+      }
+
+      body.vocab-page:not(.dark) #vocabGrid > div {
+        border-color: #dfeae5;
+        background: rgba(255, 255, 255, 0.88);
+      }
+
+      body.vocab-page:not(.dark) #vocabGrid table {
+        color: #1f2937;
+      }
+
+      body.vocab-page:not(.dark) #vocabGrid thead {
+        background: #f1f5f3;
+        color: #4b635a;
+      }
+
+      body.vocab-page:not(.dark) #vocabGrid tbody {
+        background: #fff;
+      }
+
+      body.vocab-page:not(.dark) #vocabGrid tbody tr {
+        border-color: #e5ebe8;
+      }
+
+      body.vocab-page:not(.dark) #vocabGrid tbody tr:hover {
+        background: #ecfdf5;
+      }
+
+      body.vocab-page:not(.dark) #globalSearch {
+        border-color: rgba(6, 95, 70, 0.12);
+        background: #fff;
+        color: #374151;
+      }
+
+      body.vocab-page:not(.dark) .vtab {
+        background: rgba(255, 255, 255, 0.8);
+        color: #374151;
+      }
+
+      body.vocab-page:not(.dark) .vtab.tab-active {
+        background: #047857;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body class="vocab-page font-sans bg-cream text-stone-900 transition-colors">
+    <header
+      class="sticky top-0 z-50 border-b border-emerald-900/10 bg-white/80 backdrop-blur-xl dark:bg-stone-950/80"
+    >
+      <nav
+        class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8"
+      >
+        <a href="index.html" class="flex items-center gap-3"
+          ><span
+            class="vocab-logo grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-950 text-2xl font-bold shadow-soft font-arab"
+            >م</span
+          ><span
+            ><strong class="block leading-none">Muhadatsah</strong
+            ><small class="text-xs text-emerald-700 dark:text-goldLight"
+              >Vocabulary library</small
+            ></span
+          ></a
+        >
+        <div class="hidden items-center gap-1 md:flex">
+          <a
+            href="index.html"
+            class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            >Beranda</a
+          ><a
+            href="dialog.html"
+            class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            >Percakapan</a
+          ><a
+            href="kosakata.html"
+            class="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white"
+            >Kosakata</a
+          ><a
+            href="index.html#kuis"
+            class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            >Kuis</a
+          >
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            id="darkBtn"
+            type="button"
+            aria-label="Aktifkan tema terang"
+            class="grid h-10 w-10 place-items-center rounded-full bg-stone-900 text-amber-300"
+          >
+            <i class="fa-solid fa-sun"></i>
+          </button>
+          <button
+            id="mobileMenuBtn"
+            type="button"
+            aria-label="Buka navigasi"
+            aria-expanded="false"
+            class="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/10 text-white md:hidden"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </nav>
+      <div id="mobileMenu" class="mx-auto hidden max-w-7xl px-4 pb-3 md:hidden sm:px-6 lg:px-8">
+        <div
+          class="flex flex-col gap-2 rounded-2xl border border-emerald-900/10 bg-white p-3 shadow-sm dark:bg-stone-900"
+        >
+          <a
+            href="index.html"
+            class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            >Beranda</a
+          >
+          <a
+            href="dialog.html"
+            class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            >Percakapan</a
+          >
+          <a
+            href="kosakata.html"
+            class="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-semibold text-white"
+            >Kosakata</a
+          >
+          <a
+            href="index.html#kuis"
+            class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            >Kuis</a
+          >
+        </div>
+      </div>
+    </header>
+    <main id="kosakata" class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <div class="flex flex-wrap items-end justify-between gap-5">
+        <div>
+          <p class="font-arab text-xl font-bold text-goldLight">اَلْمُفْرَدَات</p>
+          <h1 class="mt-2 text-3xl font-extrabold md:text-5xl">Tabel Kosakata</h1>
+          <p class="mt-2 text-white/60">Cari dan pelajari kosakata tiga bahasa dalam satu tabel.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs font-bold">
+          <button
+            onclick="filterVocab('all')"
+            class="vtab tab-active rounded-full bg-white/10 px-4 py-2.5"
+            data-cat="all"
+          >
+            Semua</button
+          ><button
+            onclick="filterVocab('sapaan')"
+            class="vtab rounded-full bg-white/10 px-4 py-2.5"
+            data-cat="sapaan"
+          >
+            Sapaan</button
+          ><button
+            onclick="filterVocab('sekolah')"
+            class="vtab rounded-full bg-white/10 px-4 py-2.5"
+            data-cat="sekolah"
+          >
+            Sekolah</button
+          ><button
+            onclick="filterVocab('pasar')"
+            class="vtab rounded-full bg-white/10 px-4 py-2.5"
+            data-cat="pasar"
+          >
+            Pasar</button
+          ><button
+            onclick="filterVocab('keluarga')"
+            class="vtab rounded-full bg-white/10 px-4 py-2.5"
+            data-cat="keluarga"
+          >
+            Keluarga
+          </button>
+        </div>
+      </div>
+      <div class="relative mt-7">
+        <label class="sr-only" for="globalSearch">Cari kosakata</label
+        ><input
+          id="globalSearch"
+          placeholder="Cari Arab, English, atau Indonesia..."
+          class="w-full rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-sm text-white outline-none placeholder:text-white/45 focus:border-gold"
+        />
+      </div>
+      <div id="vocabGrid" class="mt-7"></div>
+    </main>
+    <footer class="bg-stone-950 px-4 py-8 text-center text-sm text-white/60">
+      © 2026 Muhadatsah
+    </footer>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/security.js"></script>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/db.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+      var initialDark = document.documentElement.classList.contains('dark');
+      document.body.classList.toggle('dark', initialDark);
+      var themeButton = document.getElementById('darkBtn');
+      var themeIcon = themeButton.querySelector('i');
+      themeButton.setAttribute('aria-pressed', String(initialDark));
+      themeButton.setAttribute(
+        'aria-label',
+        initialDark ? 'Aktifkan tema terang' : 'Aktifkan tema gelap'
+      );
+      themeIcon.classList.toggle('fa-moon', !initialDark);
+      themeIcon.classList.toggle('fa-sun', initialDark);
+      document.getElementById('darkBtn').addEventListener('click', function () {
+        var dark = document.documentElement.classList.toggle('dark');
+        document.body.classList.toggle('dark', dark);
+        themeButton.setAttribute('aria-pressed', String(dark));
+        themeButton.setAttribute(
+          'aria-label',
+          dark ? 'Aktifkan tema terang' : 'Aktifkan tema gelap'
+        );
+        themeIcon.classList.toggle('fa-moon', !dark);
+        themeIcon.classList.toggle('fa-sun', dark);
+        localStorage.setItem('muhadatsah_theme', dark ? 'dark' : 'light');
+      });
+    </script>
+  </body>
+</html>

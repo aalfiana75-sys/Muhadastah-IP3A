@@ -45,3 +45,6 @@ desktop.ini
 .temp/
 .tmp/
 .eslintcache
+
+# Backups
+*.bak

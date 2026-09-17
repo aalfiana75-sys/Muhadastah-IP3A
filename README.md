@@ -29,18 +29,20 @@
 
 ## Fitur
 
-| Fitur                        | Keterangan                                                                                    |
-| ---------------------------- | --------------------------------------------------------------------------------------------- |
-| 🗣️ **Dialog interaktif**     | Dialog dua arah dengan mode tampilan Arab saja, Inggris saja, atau lengkap (AR • EN • ID).    |
-| 🔊 **Text-to-Speech**        | Pelafalan Arab (`ar-SA`) dan Inggris (`en-US`) per baris dialog maupun per kosakata.          |
-| ▶️ **Putar otomatis**        | Memutar seluruh isi dialog secara berurutan dengan highlight baris aktif.                     |
-| 📚 **Tabel kosakata**        | Kosakata terkelompok per kategori (sapaan, sekolah, pasar, keluarga) dengan pencarian instan. |
-| 🧠 **Kuis interaktif**       | 5 atau 10 soal acak Arab → Inggris/Indonesia, dengan skor dan papan peringkat.                |
-| 🌗 **Mode gelap**            | Tema terang/gelap dengan preferensi yang tersimpan di `localStorage`.                         |
-| 🌐 **Antarmuka tiga bahasa** | Label UI dapat diganti ID / EN / AR melalui i18n ringan bawaan.                               |
-| 🔍 **Pencarian global**      | Mencari dialog dan kosakata sekaligus dari satu kolom pencarian.                              |
-| 🛠️ **Panel admin**           | CRUD dialog, baris percakapan, dan kosakata lewat Supabase Auth.                              |
-| 📱 **Responsif**             | Tata letak adaptif untuk seluler, tablet, dan desktop.                                        |
+| Fitur                        | Keterangan                                                                                                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🗣️ **Dialog interaktif**     | Dialog dua arah dengan mode tampilan Arab saja, Inggris saja, atau lengkap (AR • EN • ID).                                                                             |
+| 🔊 **Text-to-Speech**        | Pelafalan Arab (`ar-SA`) dan Inggris (`en-US`) per baris dialog maupun per kosakata.                                                                                   |
+| ▶️ **Putar otomatis**        | Memutar seluruh isi dialog secara berurutan dengan highlight baris aktif.                                                                                              |
+| 📚 **Tabel kosakata**        | Kosakata terkelompok per kategori (sapaan, sekolah, pasar, keluarga) dengan pencarian instan.                                                                          |
+| 🧠 **Kuis interaktif**       | 5 atau 10 soal acak Arab → Inggris/Indonesia, dengan skor dan papan peringkat.                                                                                         |
+| 🌗 **Mode gelap**            | Tema terang/gelap dengan preferensi yang tersimpan di `localStorage`.                                                                                                  |
+| 🌐 **Antarmuka tiga bahasa** | Label UI dapat diganti ID / EN / AR melalui i18n ringan bawaan.                                                                                                        |
+| 🔍 **Pencarian global**      | Mencari dialog dan kosakata sekaligus dari satu kolom pencarian.                                                                                                       |
+| 🛠️ **Panel admin**           | CRUD dialog, baris percakapan, dan kosakata lewat Supabase Auth.                                                                                                       |
+| 🎧 **Impor audio admin**     | Admin bisa mengunggah berkas audio (mp3/wav/ogg/m4a) ke Supabase Storage atau memilih dari pustaka audio yang sudah ada — tanpa perlu meng-upload ke hosting sendiri.  |
+| 📱 **Responsif**             | Tata letak adaptif untuk seluler, tablet, dan desktop.                                                                                                                 |
+| 🎚️ **Studio audio admin**    | Halaman `admin-audio.html` untuk impor massal (drag & drop), ganti nama sebelum unggah, rekam langsung dari mikrofon, dan memasang audio ke baris percakapan/kosakata. |
 
 ## Demo Alur
 
@@ -77,6 +79,7 @@ Browser
 muhadastah/
 ├── index.html                  # Halaman utama
 ├── admin.html                  # Panel admin (login Supabase)
+├── admin-audio.html            # Studio audio: impor massal & rekam
 ├── assets/
 │   ├── css/style.css           # Gaya kustom + tema admin
 │   └── js/
@@ -85,8 +88,10 @@ muhadastah/
 │       ├── data.js             # Data seed lokal (dialog, kosakata, i18n)
 │       ├── db.js               # Lapisan data: Supabase REST / lokal
 │       ├── app.js              # Logika halaman utama
-│       └── admin.js            # Logika panel admin
-├── supabase/schema.sql         # Skema + RLS + seed database
+│       ├── admin.js            # Logika panel admin
+│       ├── admin-audio.js      # Impor / pustaka audio admin (Supabase Storage)
+│       └── admin-audio-studio.js # Studio audio: unggah massal, ganti nama, rekam
+├── supabase/schema.sql         # Skema + RLS + bucket storage + seed database
 ├── .env.example                # Contoh variabel lingkungan
 ├── package.json                # Skrip dev, lint, format
 ├── eslint.config.mjs           # Aturan ESLint
@@ -162,6 +167,21 @@ Constraint penting:
 - `speaker` dibatasi ke `A | B`.
 - Insert `quiz_scores` dibatasi: panjang nama 1–40, skor 0–100, total 1–100.
 
+### Storage audio
+
+`supabase/schema.sql` juga membuat bucket **`dialog-audio`** (publik, agar audio bisa
+langsung diputar oleh `index.html`) beserta policies RLS-nya:
+
+| Operasi pada `storage.objects` | Policy                          |
+| ------------------------------ | ------------------------------- |
+| `select`                       | publik (siapa pun boleh baca)   |
+| `insert` / `update` / `delete` | hanya `is_admin_user()` (admin) |
+
+Berkas disimpan dengan nama acak di folder `lines/` (mis. `lines/arab-2026-01-01-a1b2c3d4.mp3`).
+
+> Jalankan ulang `supabase/schema.sql` pada project yang sudah ada untuk menambah bucket,
+> policies, dan kolom `vocab.audio_ar_url`.
+
 ## Membuat Akun Admin
 
 1. **Authentication → Users → Add user** — isi email & password, centang **Auto Confirm User**.
@@ -175,16 +195,63 @@ on conflict (id) do update set is_admin = true;
 
 3. Buka `admin.html` dan login memakai email + password tadi.
 
+## Mengelola Audio di Admin
+
+Ada dua jalur, dan keduanya memakai bucket `dialog-audio` yang sama:
+
+### A. Studio audio (`admin-audio.html`)
+
+Halaman khusus untuk mengelola audio sebagai berkas:
+
+1. Buka **Audio** pada navigasi admin.
+2. **Impor berkas** — klik area unggah atau jatuhkan beberapa berkas audio sekaligus
+   (drag & drop). Isi **Label / prefix nama** (mis. `arab`, `kosakata`) agar nama berkas di
+   Storage mudah dikenali, dan **Ganti nama sebelum unggah** bila ingin menimpa nama asli.
+3. **Rekam dari mikrofon** — tombol _Rekam dari mikrofon_ merekam suara lalu menyimpannya
+   sebagai berkas `.webm` yang siap diunggah bersama berkas lain.
+4. Klik **Unggah ke pustaka**. Status tiap berkas (siap / mengunggah / terunggah / gagal)
+   tampil di daftar berkas.
+5. **Pasang ke materi** — pilih baris percakapan dan/atau kosakata pada bagian
+   _Pasang Audio ke Materi_, lalu klik **Pasang ke materi** pada kartu audio di pustaka.
+   Tombol **Salin URL** menyalin tautan publik untuk dipakai di tempat lain.
+
+> Mengubah audio baris lewat studio hanya mengisi kolom Arab bila baris itu belum punya
+> audio arahan Arab; kolom URL di form baris/kosakata tetap menjadi sumber utama.
+
+### B. Pemilih audio di form
+
+1. Buka halaman **Dialog**, **Conversation lines**, atau **Vocabulary** lalu pilih tombol
+   **Edit**/**Tambah** agar form muncul.
+2. Pada bagian **Audio Arab** / **Audio Inggris**, pilih salah satu cara:
+   - **Import Audio** — pilih berkas dari komputer (mp3, wav, ogg, m4a, aac, opus, webm,
+     maksimal 20 MB). Berkas langsung diunggah ke bucket `dialog-audio` dan URL publiknya
+     terisi otomatis.
+   - **Pilih dari Pustaka** — membuka modal berisi semua audio yang sudah ada di bucket;
+     tombol **Pakai audio ini** mengisi URL tanpa mengunggah ulang.
+   - **Tempel URL** — menempel URL `https://...` secara manual (mis. dari CDN lain).
+3. Klik **Simpan Baris** / **Simpan Kosakata**. URL audio disimpan di kolom
+   `dialog_lines.audio_ar_url`, `dialog_lines.audio_en_url`, atau `vocab.audio_ar_url`.
+
+Catatan:
+
+- Unggah hanya bisa dilakukan setelah login admin (RLS `is_admin_user()`), dan hanya bila
+  `SUPABASE_ENABLED=true` beserta anon key terisi.
+- Batas ukuran berkas global project Supabase Free adalah 50 MB; aplikasi sudah membatasi
+  20 MB agar aman.
+- Bila pemutar otomatis gagal (audio hilang/URL salah), halaman belajar tetap memakai
+  Text-to-Speech sebagai fallback.
+
 ## Model Keamanan
 
-| Aspek              | Implementasi                                                                                                               |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| **Kredensial**     | Tidak ada password/token rahasia di repositori. Login memakai Supabase Auth.                                               |
-| **Otorisasi**      | RLS memverifikasi `is_admin_user()` di server untuk setiap operasi tulis.                                                  |
-| **XSS**            | Semua render data melewati `esc()` / `escAttr()` dari `security.js`; nilai dinamis tidak pernah masuk ke _inline handler_. |
-| **Validasi input** | Pembatasan panjang & format di klien (admin.js) + constraint di database.                                                  |
-| **Field ikon**     | Divalidasi terhadap pola `^fa-[a-z0-9-]{1,40}$` oleh `safeIcon()`.                                                         |
-| **Fallback aman**  | Bila Supabase tidak aktif, operasi tulis ditolak dengan pesan jelas — tidak ada penulisan diam-diam.                       |
+| Aspek              | Implementasi                                                                                                                            |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Kredensial**     | Tidak ada password/token rahasia di repositori. Login memakai Supabase Auth.                                                            |
+| **Otorisasi**      | RLS memverifikasi `is_admin_user()` di server untuk setiap operasi tulis.                                                               |
+| **XSS**            | Semua render data melewati `esc()` / `escAttr()` dari `security.js`; nilai dinamis tidak pernah masuk ke _inline handler_.              |
+| **Validasi input** | Pembatasan panjang & format di klien (admin.js) + constraint di database.                                                               |
+| **Unggahan audio** | Hanya admin dapat menulis ke bucket `dialog-audio` (policy RLS `storage.objects`); ekstensi & ukuran diperiksa di klien sebelum unggah. |
+| **Field ikon**     | Divalidasi terhadap pola `^fa-[a-z0-9-]{1,40}$` oleh `safeIcon()`.                                                                      |
+| **Fallback aman**  | Bila Supabase tidak aktif, operasi tulis ditolak dengan pesan jelas — tidak ada penulisan diam-diam.                                    |
 
 Detail lengkap dan cara melaporkan kerentanan ada di [SECURITY.md](SECURITY.md).
 

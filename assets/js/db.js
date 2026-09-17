@@ -17,6 +17,33 @@ function setAccessToken(token) {
   window.SUPABASE_ACCESS_TOKEN = token || null;
 }
 
+// Ambil access token dari sesi Supabase yang sudah tersimpan di browser.
+// Dipakai oleh halaman admin mana pun saat dimuat, sehingga admin yang
+// sudah login di admin.html tidak diminta login ulang ketika berpindah
+// ke admin-dialog.html / admin-lines.html / admin-vocab.html / admin-audio.html.
+async function restoreAccessToken() {
+  if (!window.supabase || window.SUPABASE_ENABLED !== true) return null;
+  if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return null;
+  if (!window.__muhadatsah_supabase) {
+    window.__muhadatsah_supabase = window.supabase.createClient(
+      window.SUPABASE_URL,
+      window.SUPABASE_ANON_KEY,
+      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+    );
+  }
+  try {
+    var result = await window.__muhadatsah_supabase.auth.getSession();
+    var session = result && result.data ? result.data.session : null;
+    setAccessToken(session ? session.access_token : null);
+    return session;
+  } catch (e) {
+    console.warn('restoreAccessToken gagal', e);
+    setAccessToken(null);
+    return null;
+  }
+}
+window.restoreAccessToken = restoreAccessToken;
+
 function sbHeaders(extra) {
   // Selalu kirim anon key sebagai apikey. Authorization memakai access
   // token user bila tersedia (diperlukan RLS is_admin_user()).
@@ -106,12 +133,26 @@ async function dbLoadAll() {
           level: d.level,
           title: { id: d.title.id, en: d.title.en, ar: d.title.ar },
           lines: d.lines.map(function (l) {
-            return { sp: l.sp, ar: l.ar, en: l.en, id: l.id };
+            return {
+              sp: l.sp,
+              ar: l.ar,
+              en: l.en,
+              id: l.id,
+              audio_ar_url: l.audio_ar_url || null,
+              audio_en_url: l.audio_en_url || null
+            };
           })
         };
       }),
       vocab: VOCAB.map(function (v, i) {
-        return { id: i + 1, ar: v.ar, en: v.en, idn: v.id, cat: v.cat };
+        return {
+          id: i + 1,
+          ar: v.ar,
+          en: v.en,
+          idn: v.id,
+          cat: v.cat,
+          audio_url: v.audio_url || null
+        };
       })
     };
   }
@@ -130,6 +171,8 @@ async function dbLoadAll() {
       ar: l.ar,
       en: l.en,
       id: l.idn,
+      audio_ar_url: l.audio_ar_url,
+      audio_en_url: l.audio_en_url,
       position: l.position
     });
   });
@@ -148,7 +191,14 @@ async function dbLoadAll() {
       };
     }),
     vocab: vocab.map(function (v) {
-      return { id: v.id, ar: v.ar, en: v.en, idn: v.idn, cat: v.cat };
+      return {
+        id: v.id,
+        ar: v.ar,
+        en: v.en,
+        idn: v.idn,
+        cat: v.cat,
+        audio_ar_url: v.audio_ar_url || null
+      };
     })
   };
 }
@@ -183,7 +233,9 @@ async function dbCreateLine(l) {
       speaker: l.speaker,
       ar: l.ar,
       en: l.en,
-      idn: l.idn
+      idn: l.idn,
+      audio_ar_url: l.audio_ar_url || null,
+      audio_en_url: l.audio_en_url || null
     }
   ]);
   return rows[0];
@@ -197,7 +249,15 @@ async function dbDeleteLine(id) {
 
 // ---- CRUD vocab ----
 async function dbCreateVocab(v) {
-  var rows = await sbPost('vocab', [{ ar: v.ar, en: v.en, idn: v.idn, cat: v.cat }]);
+  var rows = await sbPost('vocab', [
+    {
+      ar: v.ar,
+      en: v.en,
+      idn: v.idn,
+      cat: v.cat,
+      audio_ar_url: v.audio_ar_url || null
+    }
+  ]);
   return rows[0];
 }
 async function dbUpdateVocab(id, v) {

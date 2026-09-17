@@ -38,13 +38,30 @@ function syncAccessToken(session) {
 }
 
 function getSupabaseClient() {
-  if (!window.supabase) return null;
+  if (
+    !window.supabase ||
+    window.SUPABASE_ENABLED !== true ||
+    !window.SUPABASE_URL ||
+    !window.SUPABASE_ANON_KEY
+  )
+    return null;
   if (!window.__muhadatsah_supabase) {
     window.__muhadatsah_supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
   }
   return window.__muhadatsah_supabase;
+}
+
+// Pulihkan access token sesi tersimpan lebih dulu, memakai client bersama dari
+// db.js bila ada. Tanpa ini, halaman admin selain admin.html bisa memulai
+// bootAdmin() sebelum token tersinkron sehingga tampak seperti "disuruh login lagi".
+async function ensureSessionReady() {
+  if (typeof window.restoreAccessToken === 'function') {
+    await window.restoreAccessToken();
+    return;
+  }
+  await isLoggedIn();
 }
 
 function showToast(message, type) {
@@ -129,6 +146,8 @@ function renderAll() {
   renderDialogSelector();
   updateAdminStats();
   updateDbBadge();
+  // Halaman studio audio memakai daftar ini untuk memasang audio ke materi.
+  if (typeof window.renderStudioAttachOptions === 'function') window.renderStudioAttachOptions();
 }
 
 function updateAdminStats() {
@@ -262,7 +281,9 @@ function fillDialogForm(id) {
 }
 
 function clearDialogForm() {
-  document.getElementById('dialogForm').reset();
+  var form = document.getElementById('dialogForm');
+  if (!form) return;
+  form.reset();
   document.getElementById('dialogId').value = '';
   document.getElementById('dialogCat').value = 'sapaan';
   document.getElementById('dialogIcon').value = 'fa-comments';
@@ -310,10 +331,10 @@ function renderLineList() {
           '</p></td>' +
           '<td class="px-4 py-3"><div class="flex justify-end gap-2 whitespace-nowrap">' +
           '<button data-action="edit-line" data-id="' +
-          esc(line.id) +
+          esc(line.rowId || line.id) +
           '" class="rounded-full bg-emerald-700 px-2.5 py-2 text-[11px] font-bold text-white">Edit</button>' +
           '<button data-action="delete-line" data-id="' +
-          esc(line.id) +
+          esc(line.rowId || line.id) +
           '" class="rounded-full bg-red-600 px-2.5 py-2 text-[11px] font-bold text-white">Hapus</button>' +
           '</div></td>' +
           '</tr>'
@@ -334,11 +355,11 @@ function renderLineList() {
 
 function fillLineForm(id) {
   var line = APP_STATE.lines.find(function (item) {
-    return Number(item.id) === Number(id);
+    return Number(item.rowId || item.id) === Number(id);
   });
   if (!line) return;
   APP_STATE.selectedLineId = id;
-  document.getElementById('lineId').value = line.id || '';
+  document.getElementById('lineId').value = line.rowId || line.id || '';
   document.getElementById('lineDialogId').value = String(
     line.dialog_id || APP_STATE.selectedDialogId
   );
@@ -346,11 +367,28 @@ function fillLineForm(id) {
   document.getElementById('lineSpeaker').value = line.sp || 'A';
   document.getElementById('lineAr').value = line.ar || '';
   document.getElementById('lineEn').value = line.en || '';
-  document.getElementById('lineIdn').value = line.id || '';
+  document.getElementById('lineIdn').value = line.idn || '';
+  if (document.getElementById('lineAudioAr'))
+    document.getElementById('lineAudioAr').value = line.audio_ar_url || '';
+  if (document.getElementById('lineAudioEn'))
+    document.getElementById('lineAudioEn').value = line.audio_en_url || '';
+  if (typeof window.updateAudioPreview === 'function') {
+    ['lineAudioAr', 'lineAudioEn'].forEach(function (id) {
+      var input = document.getElementById(id);
+      if (input) window.updateAudioPreview(input);
+    });
+  }
 }
 
 function clearLineForm() {
-  document.getElementById('lineForm').reset();
+  var form = document.getElementById('lineForm');
+  if (!form) return;
+  form.reset();
+  ['lineAudioAr', 'lineAudioEn'].forEach(function (id) {
+    var input = document.getElementById(id);
+    if (input) input.value = '';
+  });
+  if (typeof window.resetAudioPickers === 'function') window.resetAudioPickers();
   document.getElementById('lineId').value = '';
   document.getElementById('lineSpeaker').value = 'A';
   document.getElementById('lineDialogId').value = String(APP_STATE.selectedDialogId || '');
@@ -423,16 +461,26 @@ function fillVocabForm(id) {
   document.getElementById('vocabEn').value = vocab.en || '';
   document.getElementById('vocabIdn').value = vocab.idn || '';
   document.getElementById('vocabCat').value = vocab.cat || 'sapaan';
+  var vocabAudio = document.getElementById('vocabAudioAr');
+  if (vocabAudio) {
+    vocabAudio.value = vocab.audio_ar_url || '';
+    if (typeof window.updateAudioPreview === 'function') window.updateAudioPreview(vocabAudio);
+  }
 }
 
 function clearVocabForm() {
-  document.getElementById('vocabForm').reset();
+  var form = document.getElementById('vocabForm');
+  if (!form) return;
+  form.reset();
   document.getElementById('vocabId').value = '';
+  if (typeof window.resetAudioPickers === 'function') window.resetAudioPickers();
 }
 
 function setLoginScreen(showLogin) {
-  document.getElementById('loginScreen').classList.toggle('hidden', !showLogin);
-  document.getElementById('adminScreen').classList.toggle('hidden', showLogin);
+  var login = document.getElementById('loginScreen');
+  var admin = document.getElementById('adminScreen');
+  if (login) login.classList.toggle('hidden', !showLogin);
+  if (admin) admin.classList.toggle('hidden', showLogin);
 }
 
 async function handleLogin(event) {
@@ -445,14 +493,35 @@ async function handleLogin(event) {
 
   var email = document.getElementById('email').value.trim();
   var password = document.getElementById('password').value;
-
   if (!email || !password) {
     showToast('Email dan password harus diisi.', 'error');
     return;
   }
-
+  // Hook reCAPTCHA (disiapkan untuk integrasi mendatang).
+  // Jika halaman memuat https://www.google.com/recaptcha/api.js dan menetapkan
+  // window.MUHADATSAH_RECAPTCHA_SITE_KEY, token v3 akan dikirim bersama
+  // kredensial sebagai gotrue_meta_security.captchaToken.
+  var captchaToken = null;
   try {
-    var result = await client.auth.signInWithPassword({ email: email, password: password });
+    if (window.grecaptcha && window.MUHADATSAH_RECAPTCHA_SITE_KEY) {
+      captchaToken = await new Promise(function (resolve) {
+        window.grecaptcha.ready(function () {
+          window.grecaptcha
+            .execute(window.MUHADATSAH_RECAPTCHA_SITE_KEY, { action: 'admin_login' })
+            .then(resolve)
+            .catch(function () {
+              resolve(null);
+            });
+        });
+      });
+    }
+  } catch (e) {
+    captchaToken = null;
+  }
+  try {
+    var signInPayload = { email: email, password: password };
+    if (captchaToken) signInPayload.gotrue_meta_security = { captchaToken: captchaToken };
+    var result = await client.auth.signInWithPassword(signInPayload);
     if (result.error) {
       showToast(result.error.message || 'Login gagal.', 'error');
       return;
@@ -558,8 +627,21 @@ async function saveLine(event) {
     speaker: document.getElementById('lineSpeaker').value === 'B' ? 'B' : 'A',
     ar: document.getElementById('lineAr').value.trim().slice(0, 500),
     en: document.getElementById('lineEn').value.trim().slice(0, 500),
-    idn: document.getElementById('lineIdn').value.trim().slice(0, 500)
+    idn: document.getElementById('lineIdn').value.trim().slice(0, 500),
+    audio_ar_url: document.getElementById('lineAudioAr').value.trim().slice(0, 1000),
+    audio_en_url: document.getElementById('lineAudioEn').value.trim().slice(0, 1000)
   };
+
+  if (
+    (payload.audio_ar_url && !/^https:\/\//i.test(payload.audio_ar_url)) ||
+    (payload.audio_en_url && !/^https:\/\//i.test(payload.audio_en_url))
+  ) {
+    showToast('URL audio harus menggunakan HTTPS.', 'error');
+    return;
+  }
+
+  // Validasi tambahan untuk form yang memakai pemilih audio berdata-branch.
+  if (typeof window.validateAudioPickers === 'function' && !window.validateAudioPickers()) return;
 
   if (!payload.dialog_id || !payload.ar || !payload.en || !payload.idn) {
     showToast('Dialog, teks Arab, English, dan Indonesia wajib diisi.', 'error');
@@ -601,17 +683,27 @@ async function saveVocab(event) {
   event.preventDefault();
   if (!ensureWritable()) return;
   var id = document.getElementById('vocabId').value;
+  var vocabAudioInput = document.getElementById('vocabAudioAr');
   var payload = {
     ar: document.getElementById('vocabAr').value.trim().slice(0, 200),
     en: document.getElementById('vocabEn').value.trim().slice(0, 200),
     idn: document.getElementById('vocabIdn').value.trim().slice(0, 200),
     cat: document.getElementById('vocabCat').value
   };
+  if (vocabAudioInput) payload.audio_ar_url = vocabAudioInput.value.trim().slice(0, 1000);
 
   if (!payload.ar || !payload.en || !payload.idn) {
     showToast('Kosakata Arab, English, dan Indonesia wajib diisi.', 'error');
     return;
   }
+
+  if (payload.audio_ar_url && !/^https:\/\//i.test(payload.audio_ar_url)) {
+    showToast('URL audio harus dimulai dengan https://', 'error');
+    return;
+  }
+
+  // Validasi tambahan untuk form yang memakai pemilih audio berdata-branch.
+  if (typeof window.validateAudioPickers === 'function' && !window.validateAudioPickers()) return;
 
   try {
     if (id) {
@@ -644,29 +736,59 @@ async function deleteVocabById(id) {
 }
 
 function setupEvents() {
-  document.getElementById('loginForm').addEventListener('submit', handleLogin);
-  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-  document.getElementById('newDialogBtn').addEventListener('click', function () {
-    clearDialogForm();
-    APP_STATE.selectedDialogId = null;
-    renderAll();
-  });
-  document.getElementById('newLineBtn').addEventListener('click', function () {
-    clearLineForm();
-    if (APP_STATE.selectedDialogId)
-      document.getElementById('lineDialogId').value = String(APP_STATE.selectedDialogId);
-  });
-  document.getElementById('newVocabBtn').addEventListener('click', clearVocabForm);
-  document.getElementById('dialogForm').addEventListener('submit', saveDialog);
-  document.getElementById('lineForm').addEventListener('submit', saveLine);
-  document.getElementById('vocabForm').addEventListener('submit', saveVocab);
-  document.getElementById('lineDialogId').addEventListener('change', function () {
-    APP_STATE.selectedDialogId = Number(this.value);
-    renderAll();
-  });
+  var loginForm = document.getElementById('loginForm');
+  var logoutBtn = document.getElementById('logoutBtn');
+  var newDialogBtn = document.getElementById('newDialogBtn');
+  var newLineBtn = document.getElementById('newLineBtn');
+  var newVocabBtn = document.getElementById('newVocabBtn');
+  var dialogForm = document.getElementById('dialogForm');
+  var lineForm = document.getElementById('lineForm');
+  var vocabForm = document.getElementById('vocabForm');
+  var lineDialogId = document.getElementById('lineDialogId');
+  if (loginForm) loginForm.addEventListener('submit', handleLogin);
+  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+  if (newDialogBtn)
+    newDialogBtn.addEventListener('click', function () {
+      clearDialogForm();
+      APP_STATE.selectedDialogId = null;
+      renderAll();
+    });
+  if (newLineBtn)
+    newLineBtn.addEventListener('click', function () {
+      clearLineForm();
+      if (APP_STATE.selectedDialogId)
+        document.getElementById('lineDialogId').value = String(APP_STATE.selectedDialogId);
+    });
+  if (newVocabBtn) newVocabBtn.addEventListener('click', clearVocabForm);
+  if (dialogForm) dialogForm.addEventListener('submit', saveDialog);
+  if (lineForm) lineForm.addEventListener('submit', saveLine);
+  if (vocabForm) vocabForm.addEventListener('submit', saveVocab);
+  if (lineDialogId)
+    lineDialogId.addEventListener('change', function () {
+      APP_STATE.selectedDialogId = Number(this.value);
+      renderAll();
+    });
+
+  // Tombol pengelola audio (import dari komputer / pilih dari pustaka).
+  if (typeof window.setupAudioPickers === 'function') window.setupAudioPickers();
 }
 
+// Tunggu SDK Supabase (script defer) selesai dimuat sebelum boot.
+// Tanpa ini, bootAdmin() berjalan sebelum window.supabase ada sehingga
+// sesi login tidak pernah dipulihkan -> admin diminta login ulang
+// setiap kali berpindah halaman admin.
+function waitForSupabaseSdk(timeoutMs) {
+  return new Promise(function (resolve) {
+    var started = Date.now();
+    (function poll() {
+      if (window.supabase && window.supabase.createClient) return resolve(true);
+      if (Date.now() - started > (timeoutMs || 8000)) return resolve(false);
+      setTimeout(poll, 60);
+    })();
+  });
+}
 async function bootAdmin() {
+  await waitForSupabaseSdk(8000);
   var client = getSupabaseClient();
   if (client && client.auth && client.auth.onAuthStateChange) {
     client.auth.onAuthStateChange(function (event, session) {
@@ -683,6 +805,7 @@ async function bootAdmin() {
     });
   }
 
+  await ensureSessionReady();
   var loggedIn = await isLoggedIn();
   if (loggedIn) {
     setLoginScreen(false);

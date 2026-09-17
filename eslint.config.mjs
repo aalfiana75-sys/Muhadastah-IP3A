@@ -3,12 +3,7 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: [
-      'node_modules/**',
-      'dist/**',
-      'coverage/**',
-      'assets/js/config.local.js'
-    ]
+    ignores: ['node_modules/**', 'dist/**', 'coverage/**', 'assets/js/config.local.js']
   },
   js.configs.recommended,
   {
@@ -47,6 +42,26 @@ export default [
     files: ['assets/js/data.js'],
     rules: {
       'no-unused-vars': 'off'
+    }
+  },
+  {
+    // Helper yang dideklarasikan di admin-audio.js dan dipakai oleh
+    // admin-audio-studio.js (keduanya skrip klasik pada halaman yang sama).
+    files: ['assets/js/admin-audio-studio.js'],
+    languageOptions: {
+      globals: {
+        AUDIO_BUCKET: 'readonly',
+        AUDIO_FOLDER: 'readonly',
+        AUDIO_EXTENSIONS: 'readonly',
+        AUDIO_MAX_BYTES: 'readonly',
+        AUDIO_MIME_BY_EXT: 'readonly',
+        audioEsc: 'readonly',
+        audioSlug: 'readonly',
+        audioExtOf: 'readonly',
+        audioGetClient: 'readonly',
+        audioBuildPath: 'readonly',
+        APP_STATE: 'readonly'
+      }
     }
   }
 ];

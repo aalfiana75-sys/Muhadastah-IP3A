@@ -25,6 +25,41 @@ var safeIcon =
   function (v, f) {
     return /^fa-[a-z0-9-]{1,40}$/.test(String(v || '')) ? v : f || 'fa-comments';
   };
+function getWeekStart(date) {
+  var day = date.getDay();
+  var diff = day === 0 ? -6 : 1 - day;
+  var start = new Date(date);
+  start.setDate(date.getDate() + diff);
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+function formatDateRange(start) {
+  var end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  var format = function (date) {
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+  };
+  return format(start) + ' - ' + format(end) + ' ' + end.getFullYear();
+}
+function isoWeekNumber(date) {
+  var target = new Date(date);
+  target.setHours(0, 0, 0, 0);
+  target.setDate(target.getDate() + 3 - ((target.getDay() + 6) % 7));
+  var firstThursday = new Date(target.getFullYear(), 0, 4);
+  return (
+    1 +
+    Math.round(((target - firstThursday) / 86400000 - 3 + ((firstThursday.getDay() + 6) % 7)) / 7)
+  );
+}
+function renderWeeklyLanguage() {
+  var current = $('weeklyLanguage');
+  var currentDates = $('weeklyDates');
+  if (!current || !currentDates) return;
+  var start = getWeekStart(new Date());
+  var englishThisWeek = isoWeekNumber(start) % 2 === 1;
+  current.textContent = englishThisWeek ? 'English' : 'Arab';
+  currentDates.textContent = formatDateRange(start);
+}
 function speak(t, lang) {
   try {
     speechSynthesis.cancel();
@@ -50,6 +85,7 @@ var CATS = [
   ['keluarga', 'Keluarga', 'fa-people-roof']
 ];
 function renderCats() {
+  if (!$('catTabs')) return;
   $('catTabs').innerHTML = CATS.map(
     (c) =>
       `<button onclick="setCat('${escJs(c[0]).slice(1, -1)}')" class="shrink-0 flex items-center gap-2 border px-5 py-2.5 text-sm font-bold rounded-full transition-all ${curCat === c[0] ? 'tab-active border-emerald-700 shadow-sm' : 'border-emerald-900/10 bg-white/80 text-stone-700 hover:border-emerald-500 hover:text-emerald-700 dark:bg-stone-900/80 dark:text-stone-200'}"><i class="fa-solid ${safeIcon(c[2])}"></i>${esc(c[1])}</button>`
@@ -62,6 +98,7 @@ function setCat(c) {
 }
 function renderDialogs(q = '') {
   const g = $('dialogGrid');
+  if (!g) return;
   const list = DIALOGS.filter(
     (d) =>
       (curCat === 'all' || d.cat === curCat) &&
@@ -132,6 +169,14 @@ function speakLine(i, which) {
   document.querySelectorAll('.dialog-line').forEach((x) => x.classList.remove('active'));
   $('line' + i).classList.add('active');
   $('line' + i).scrollIntoView({ behavior: 'smooth', block: 'center' });
+  var audioUrl = which === 'ar' ? l.audio_ar_url : l.audio_en_url;
+  if (audioUrl && /^https?:\/\//i.test(audioUrl)) {
+    var audio = new Audio(audioUrl);
+    audio.play().catch(function () {
+      speak(which === 'ar' ? l.ar : l.en, which === 'ar' ? 'ar-SA' : 'en-US');
+    });
+    return;
+  }
   speak(which === 'ar' ? l.ar : l.en, which === 'ar' ? 'ar-SA' : 'en-US');
 }
 function playDialog() {
@@ -170,18 +215,20 @@ function playDialog() {
 function playAll() {
   const all = DIALOGS.flatMap((d) => d.lines.map((l) => l.ar));
   speak(all.slice(0, 6).join('. '), 'ar-SA');
-  document.querySelector('#percakapan').scrollIntoView({ behavior: 'smooth' });
+  const section = document.querySelector('#percakapan');
+  if (section) section.scrollIntoView({ behavior: 'smooth' });
 }
 // VOCAB
 function renderVocab(f = 'all', q = '') {
   const g = $('vocabGrid');
+  if (!g) return;
   const list = VOCAB.filter(
     (v) =>
       (f === 'all' || v.cat === f) &&
       (!q || (v.ar + v.en + v.id).toLowerCase().includes(q.toLowerCase()))
   );
-  $('statVocab').textContent = VOCAB.length;
-  $('statDialog').textContent = DIALOGS.length;
+  if ($('statVocab')) $('statVocab').textContent = VOCAB.length;
+  if ($('statDialog')) $('statDialog').textContent = DIALOGS.length;
   if (!list.length) {
     g.innerHTML = `<div class="rounded-2xl border border-dashed border-white/20 bg-white/5 p-6 text-center text-white/60 font-bold">Tidak ditemukan.</div>`;
     return;
@@ -237,8 +284,9 @@ function renderVocab(f = 'all', q = '') {
 }
 function filterVocab(c) {
   document.querySelectorAll('.vtab').forEach((b) => b.classList.remove('tab-active'));
-  document.querySelector(`.vtab[data-cat="${c}"]`).classList.add('tab-active');
-  renderVocab(c, $('globalSearch').value);
+  const tab = document.querySelector(`.vtab[data-cat="${c}"]`);
+  if (tab) tab.classList.add('tab-active');
+  renderVocab(c, $('globalSearch') ? $('globalSearch').value : '');
 }
 // QUIZ
 function startQuiz(n) {
@@ -377,47 +425,28 @@ async function renderTop() {
     .join('');
 }
 // UI LANG + SEARCH + DARK
-$('uiLang').addEventListener('change', (e) => {
-  const l = e.target.value;
-  document.querySelectorAll('[data-i18n]').forEach((el) => {
-    const k = el.dataset.i18n;
-    if (I18N[l][k]) el.textContent = I18N[l][k];
+if ($('uiLang'))
+  $('uiLang').addEventListener('change', (e) => {
+    const l = e.target.value;
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const k = el.dataset.i18n;
+      if (I18N[l][k]) el.textContent = I18N[l][k];
+    });
+    $('htmlRoot').lang = l;
+    document.querySelectorAll('.font-arab').forEach(() => {});
+    renderDialogs($('globalSearch') ? $('globalSearch').value : '');
   });
-  $('htmlRoot').lang = l;
-  document.querySelectorAll('.font-arab').forEach(() => {});
-  renderDialogs($('globalSearch').value);
-});
-$('globalSearch').addEventListener('input', (e) => {
-  renderDialogs(e.target.value);
-  var activeTab = document.querySelector('.vtab.tab-active');
-  renderVocab(activeTab ? activeTab.dataset.cat : 'all', e.target.value);
-});
-var THEME_KEY = 'muhadatsah_theme';
-function applyTheme(mode) {
-  var dark = mode === 'dark';
-  document.documentElement.classList.toggle('dark', dark);
-  var icon = $('darkBtn') && $('darkBtn').querySelector('i');
-  if (icon) {
-    icon.classList.toggle('fa-moon', !dark);
-    icon.classList.toggle('fa-sun', dark);
-  }
-}
-try {
-  var savedTheme = localStorage.getItem(THEME_KEY);
-  if (savedTheme) applyTheme(savedTheme);
-  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    applyTheme('dark');
-} catch (e) {}
-$('darkBtn').addEventListener('click', () => {
-  var next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-  applyTheme(next);
-  try {
-    localStorage.setItem(THEME_KEY, next);
-  } catch (e) {}
-});
-$('dlgModal').addEventListener('click', (e) => {
-  if (e.target.id === 'dlgModal') closeModal();
-});
+if ($('globalSearch'))
+  $('globalSearch').addEventListener('input', (e) => {
+    renderDialogs(e.target.value);
+    var activeTab = document.querySelector('.vtab.tab-active');
+    renderVocab(activeTab ? activeTab.dataset.cat : 'all', e.target.value);
+  });
+// Tema gelap/terang ditangani oleh assets/js/theme.js (dimuat di <head>).
+if ($('dlgModal'))
+  $('dlgModal').addEventListener('click', (e) => {
+    if (e.target.id === 'dlgModal') closeModal();
+  });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
 });
@@ -426,7 +455,8 @@ const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 const mobileMenu = document.getElementById('mobileMenu');
 if (mobileMenuBtn && mobileMenu) {
   mobileMenuBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('hidden');
+    const expanded = mobileMenu.classList.toggle('hidden') === false;
+    mobileMenuBtn.setAttribute('aria-expanded', String(expanded));
     const icon = mobileMenuBtn.querySelector('i');
     if (icon) {
       icon.classList.toggle('fa-bars');
@@ -445,6 +475,7 @@ if ('IntersectionObserver' in window) {
   document.querySelectorAll('.reveal').forEach((el) => el.classList.add('visible'));
 }
 async function boot() {
+  renderWeeklyLanguage();
   renderCats();
   renderDialogs();
   renderVocab();
@@ -491,4 +522,4 @@ window.renderDialogs = renderDialogs;
 window.renderVocab = renderVocab;
 window.renderTop = renderTop;
 window.saveQuizScore = saveQuizScore;
-window.applyTheme = applyTheme;
+window.applyTheme = (window.Theme && window.Theme.applyTheme) || function () {};
