@@ -1,215 +1,132 @@
 <!doctype html>
 <html lang="id" id="htmlRoot">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Dialog percakapan Bahasa Arab, Inggris, dan Indonesia." />
-    <title>Dialog Percakapan | Muhadatsah</title>
-    <script>
-      tailwind = { config: { darkMode: 'class' } };
-      (function () {
-        var dark = localStorage.getItem('muhadatsah_theme') === 'dark';
-        document.documentElement.classList.toggle('dark', dark);
-      })();
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-    <link rel="stylesheet" href="assets/css/style.css" />
-  </head>
-  <body
-    class="font-sans bg-cream text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors"
-  >
-    <header
-      class="sticky top-0 z-50 border-b border-emerald-900/10 bg-white/85 backdrop-blur-xl dark:bg-stone-950/85"
-    >
-      <nav
-        class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8"
-      >
-        <a href="index.html" class="flex items-center gap-3">
-          <span
-            class="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-800 text-2xl font-bold text-gold font-arab"
-            >م</span
-          >
-          <span
-            ><strong class="block leading-none">Muhadatsah</strong
-            ><small class="text-xs text-emerald-700 dark:text-goldLight"
-              >Conversation studio</small
-            ></span
-          >
-        </a>
-        <div class="hidden items-center gap-1 md:flex">
-          <a
-            href="index.html"
-            class="rounded-full px-4 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800"
-            >Beranda</a
-          >
-          <a
-            href="dialog.html"
-            class="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white"
-            >Percakapan</a
-          >
-          <a
-            href="kosakata.html"
-            class="rounded-full px-4 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800"
-            >Kosakata</a
-          >
-          <a
-            href="index.html#kuis"
-            class="rounded-full px-4 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800"
-            >Kuis</a
-          >
-        </div>
-        <div class="flex items-center gap-2">
-          <button
-            id="darkBtn"
-            type="button"
-            aria-label="Aktifkan tema gelap"
-            class="grid h-10 w-10 place-items-center rounded-full bg-stone-900 text-amber-300"
-          >
-            <i class="fa-solid fa-moon"></i>
-          </button>
-          <button
-            id="mobileMenuBtn"
-            type="button"
-            aria-label="Buka navigasi"
-            aria-expanded="false"
-            class="grid h-10 w-10 place-items-center rounded-full border border-emerald-900/10 bg-white text-stone-700 md:hidden dark:bg-stone-900 dark:text-stone-100"
-          >
-            <i class="fa-solid fa-bars"></i>
-          </button>
-        </div>
-      </nav>
-      <div id="mobileMenu" class="mx-auto hidden max-w-7xl px-4 pb-3 md:hidden sm:px-6 lg:px-8">
-        <div
-          class="flex flex-col gap-2 rounded-2xl border border-emerald-900/10 bg-white p-3 shadow-sm dark:bg-stone-900"
-        >
-          <a
-            href="index.html"
-            class="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800"
-            >Beranda</a
-          >
-          <a
-            href="dialog.html"
-            class="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-semibold text-white"
-            >Percakapan</a
-          >
-          <a
-            href="kosakata.html"
-            class="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800"
-            >Kosakata</a
-          >
-          <a
-            href="index.html#kuis"
-            class="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800"
-            >Kuis</a
-          >
-        </div>
-      </div>
-    </header>
 
-    <main id="percakapan" class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-      <div class="flex flex-wrap items-end justify-between gap-5">
-        <div>
-          <p class="font-arab text-xl font-bold text-gold">اَلْحِوَارَات</p>
-          <h1 class="mt-2 text-3xl font-extrabold md:text-5xl">Dialog Percakapan</h1>
-          <p class="mt-2 text-stone-500 dark:text-stone-400">
-            Pilih materi untuk membuka percakapan lengkap dan audio per baris.
-          </p>
-        </div>
-        <div class="flex gap-2 text-xs font-bold">
-          <button
-            onclick="playAll()"
-            class="rounded-full bg-stone-900 px-4 py-2.5 text-white dark:bg-white dark:text-stone-900"
-          >
-            <i class="fa-solid fa-play mr-1"></i>Putar Semua
-          </button>
-          <button onclick="stopSpeak()" class="rounded-full bg-red-600 px-4 py-2.5 text-white">
-            <i class="fa-solid fa-stop mr-1"></i>Stop
-          </button>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dialog percakapan Bahasa Arab, Inggris, dan Indonesia." />
+  <title>Dialog Percakapan | Muhadatsah</title>
+  <script>
+    tailwind = { config: { darkMode: 'class' } };
+    (function () {
+      var dark = localStorage.getItem('muhadatsah_theme') === 'dark';
+      document.documentElement.classList.toggle('dark', dark);
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body class="font-sans bg-cream text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors">
+  <header class="sticky top-0 z-50 border-b border-emerald-900/10 bg-white/85 backdrop-blur-xl dark:bg-stone-950/85">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <a href="index.html" class="flex items-center gap-3">
+        <span
+          class="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-800 text-2xl font-bold text-gold font-arab">م</span>
+        <span><strong class="block leading-none">Muhadatsah</strong><small
+            class="text-xs text-emerald-700 dark:text-goldLight">Conversation studio</small></span>
+      </a>
+      <div class="hidden items-center gap-1 md:flex">
+        <a href="index.html"
+          class="rounded-full px-4 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800">Beranda</a>
+        <a href="dialog.html"
+          class="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Percakapan</a>
+        <a href="kosakata.html"
+          class="rounded-full px-4 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800">Kosakata</a>
+        <a href="index.html#kuis"
+          class="rounded-full px-4 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800">Kuis</a>
       </div>
-      <div id="catTabs" class="mt-7 flex gap-2 overflow-x-auto pb-2"></div>
-      <div class="relative mt-3">
-        <label class="sr-only" for="globalSearch">Cari dialog</label>
-        <input
-          id="globalSearch"
-          placeholder="Cari dialog, tema, atau kalimat..."
-          class="w-full rounded-2xl border-2 border-emerald-900/10 bg-white px-5 py-4 text-sm outline-none focus:border-emerald-600 dark:border-stone-700 dark:bg-stone-900"
-        />
+      <div class="flex items-center gap-2">
+        <button id="darkBtn" type="button" aria-label="Aktifkan tema gelap"
+          class="grid h-10 w-10 place-items-center rounded-full bg-stone-900 text-amber-300">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button id="mobileMenuBtn" type="button" aria-label="Buka navigasi" aria-expanded="false"
+          class="grid h-10 w-10 place-items-center rounded-full border border-emerald-900/10 bg-white text-stone-700 md:hidden dark:bg-stone-900 dark:text-stone-100">
+          <i class="fa-solid fa-bars"></i>
+        </button>
       </div>
-      <div id="dialogGrid" class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"></div>
+    </nav>
+    <div id="mobileMenu" class="mx-auto hidden max-w-7xl px-4 pb-3 md:hidden sm:px-6 lg:px-8">
       <div
-        id="dlgModal"
-        class="fixed inset-0 z-[80] hidden overflow-y-auto bg-black/60 p-4 backdrop-blur-sm"
-      >
-        <div
-          class="mx-auto my-8 max-w-3xl overflow-hidden rounded-3xl bg-white shadow-soft dark:bg-stone-900"
-        >
-          <div
-            id="modalHead"
-            class="bg-gradient-to-l from-emerald-800 to-emerald-950 p-6 text-white"
-          ></div>
-          <div class="p-6">
-            <div class="mb-4 flex gap-2 text-xs font-bold">
-              <button
-                onclick="setScriptMode('all')"
-                id="mAll"
-                class="rounded-full bg-emerald-700 px-4 py-2 text-white"
-              >
-                AR • EN • ID</button
-              ><button
-                onclick="setScriptMode('ar')"
-                id="mAr"
-                class="rounded-full bg-stone-200 px-4 py-2 dark:bg-stone-800"
-              >
-                Arab saja</button
-              ><button
-                onclick="setScriptMode('en')"
-                id="mEn"
-                class="rounded-full bg-stone-200 px-4 py-2 dark:bg-stone-800"
-              >
-                English only
-              </button>
-            </div>
-            <div id="modalBody" class="space-y-3"></div>
-            <div class="mt-6 flex gap-2">
-              <button
-                onclick="playDialog()"
-                class="rounded-xl bg-emerald-700 px-5 py-3 text-sm font-bold text-white"
-              >
-                <i class="fa-solid fa-circle-play mr-1"></i>Putar Dialog</button
-              ><button
-                onclick="closeModal()"
-                class="rounded-xl bg-stone-200 px-5 py-3 text-sm font-bold dark:bg-stone-800"
-              >
-                Tutup
-              </button>
-            </div>
+        class="flex flex-col gap-2 rounded-2xl border border-emerald-900/10 bg-white p-3 shadow-sm dark:bg-stone-900">
+        <a href="index.html"
+          class="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800">Beranda</a>
+        <a href="dialog.html"
+          class="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-semibold text-white">Percakapan</a>
+        <a href="kosakata.html"
+          class="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800">Kosakata</a>
+        <a href="index.html#kuis"
+          class="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-stone-800">Kuis</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="percakapan" class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+    <div class="flex flex-wrap items-end justify-between gap-5">
+      <div>
+        <p class="font-arab text-xl font-bold text-gold">اَلْحِوَارَات</p>
+        <h1 class="mt-2 text-3xl font-extrabold md:text-5xl">Dialog Percakapan</h1>
+        <p class="mt-2 text-stone-500 dark:text-stone-400">
+          Pilih materi untuk membuka percakapan lengkap dan teks per baris.
+        </p>
+      </div>
+      <div class="flex gap-2 text-xs font-bold">
+        <span class="rounded-full bg-stone-100 px-4 py-2.5 text-stone-700 dark:bg-stone-800 dark:text-stone-200">
+          Teks saja
+        </span>
+      </div>
+    </div>
+    <div id="catTabs" class="mt-7 flex gap-2 overflow-x-auto pb-2"></div>
+    <div class="relative mt-3">
+      <label class="sr-only" for="globalSearch">Cari dialog</label>
+      <input id="globalSearch" placeholder="Cari dialog, tema, atau kalimat..."
+        class="w-full rounded-2xl border-2 border-emerald-900/10 bg-white px-5 py-4 text-sm outline-none focus:border-emerald-600 dark:border-stone-700 dark:bg-stone-900" />
+    </div>
+    <div id="dialogGrid" class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"></div>
+    <div id="dlgModal" class="fixed inset-0 z-[80] hidden overflow-y-auto bg-black/60 p-4 backdrop-blur-sm">
+      <div class="mx-auto my-8 max-w-3xl overflow-hidden rounded-3xl bg-white shadow-soft dark:bg-stone-900">
+        <div id="modalHead" class="bg-gradient-to-l from-emerald-800 to-emerald-950 p-6 text-white"></div>
+        <div class="p-6">
+          <div class="mb-4 flex gap-2 text-xs font-bold">
+            <button onclick="setScriptMode('all')" id="mAll" class="rounded-full bg-emerald-700 px-4 py-2 text-white">
+              AR • EN • ID</button><button onclick="setScriptMode('ar')" id="mAr"
+              class="rounded-full bg-stone-200 px-4 py-2 dark:bg-stone-800">
+              Arab saja</button><button onclick="setScriptMode('en')" id="mEn"
+              class="rounded-full bg-stone-200 px-4 py-2 dark:bg-stone-800">
+              English only
+            </button>
+          </div>
+          <div id="modalBody" class="space-y-3"></div>
+          <div class="mt-6 flex gap-2">
+            <button onclick="closeModal()"
+              class="rounded-xl bg-stone-200 px-5 py-3 text-sm font-bold dark:bg-stone-800">
+              Tutup
+            </button>
           </div>
         </div>
       </div>
-    </main>
-    <footer class="bg-stone-950 px-4 py-8 text-center text-sm text-white/60">
-      © 2026 Muhadatsah
-    </footer>
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/security.js"></script>
-    <script src="assets/js/data.js"></script>
-    <script src="assets/js/db.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script>
-      var darkBtn = document.getElementById('darkBtn');
-      darkBtn.addEventListener('click', function () {
-        var dark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('muhadatsah_theme', dark ? 'dark' : 'light');
-      });
-    </script>
-  </body>
+    </div>
+  </main>
+  <footer class="bg-stone-950 px-4 py-8 text-center text-sm text-white/60">
+    © 2026 Muhadatsah
+  </footer>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/security.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    var darkBtn = document.getElementById('darkBtn');
+    darkBtn.addEventListener('click', function () {
+      var dark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('muhadatsah_theme', dark ? 'dark' : 'light');
+    });
+  </script>
+</body>
+
 </html>

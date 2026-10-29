@@ -9,15 +9,8 @@
 //   - service_role key, password admin, atau token rahasia apa pun.
 //   - Semua operasi tulis (CRUD admin) divalidasi lewat Supabase Auth + RLS.
 //
-// Cara mengisi kredensial lokal tanpa masuk Git:
-//   1. Buat file `assets/js/config.local.js` (sudah masuk .gitignore)
-//   2. Isi: window.SUPABASE_ANON_KEY = "..."; window.SUPABASE_ENABLED = true;
-//   3. Tambahkan satu baris di HTML SETELAH config.js:
-//        <script src="assets/js/config.local.js"></script>
-//      (sengaja tidak disertakan default agar tidak memicu 404.)
-//
-// Alternatif tanpa menyentuh HTML: gunakan <meta> tag (lihat bawah),
-// atau set window.SUPABASE_* dari file yang Anda deploy terpisah.
+// Konfigurasi database aktif ada di DEFAULTS di bawah. Untuk deployment,
+// gunakan <meta> tag atau atur window.SUPABASE_* melalui konfigurasi hosting.
 // =============================================
 
 /* global window, document */
@@ -26,9 +19,13 @@
   'use strict';
 
   var DEFAULTS = {
-    SUPABASE_URL: 'https://nvwgxdrlysrmvzdeyvev.supabase.co',
-    SUPABASE_ANON_KEY: '',
-    SUPABASE_ENABLED: false
+    // Nilai URL/key di sini bersifat publik; jangan pernah memakai service_role key.
+    SUPABASE_URL: 'https://blvqzmqorzhfsazrdbex.supabase.co',
+    SUPABASE_ANON_KEY:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsdnF6bXFvcnpoZnNhenJkYmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMDQ2MzUsImV4cCI6MjEwODY4MDYzNX0.QV89S5Ch_UI0eN6IVicBZhjK71a-nxFldKf4jXgCUto',
+    SUPABASE_ENABLED: true,
+    MUHADATSAH_RECAPTCHA_SITE_KEY: '',
+    MUHADATSAH_RECAPTCHA_ENABLED: false
   };
 
   if (typeof window.SUPABASE_URL !== 'string' || !window.SUPABASE_URL) {

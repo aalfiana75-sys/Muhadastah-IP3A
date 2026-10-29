@@ -44,24 +44,4 @@ export default [
       'no-unused-vars': 'off'
     }
   },
-  {
-    // Helper yang dideklarasikan di admin-audio.js dan dipakai oleh
-    // admin-audio-studio.js (keduanya skrip klasik pada halaman yang sama).
-    files: ['assets/js/admin-audio-studio.js'],
-    languageOptions: {
-      globals: {
-        AUDIO_BUCKET: 'readonly',
-        AUDIO_FOLDER: 'readonly',
-        AUDIO_EXTENSIONS: 'readonly',
-        AUDIO_MAX_BYTES: 'readonly',
-        AUDIO_MIME_BY_EXT: 'readonly',
-        audioEsc: 'readonly',
-        audioSlug: 'readonly',
-        audioExtOf: 'readonly',
-        audioGetClient: 'readonly',
-        audioBuildPath: 'readonly',
-        APP_STATE: 'readonly'
-      }
-    }
-  }
 ];

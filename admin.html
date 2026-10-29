@@ -1,679 +1,409 @@
 ﻿<!doctype html>
 <html lang="id" id="htmlRoot">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex, nofollow" />
-    <meta
-      name="description"
-      content="Panel admin Muhadatsah — kelola dialog, baris percakapan, dan kosakata."
-    />
-    <meta name="theme-color" content="#065f46" />
-    <title>Admin Muhadatsah</title>
-    <!-- Tema inline: dijalankan SEBELUM script eksternal apa pun agar tema
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Panel admin Muhadatsah — kelola dialog, baris percakapan, dan kosakata." />
+  <meta name="theme-color" content="#065f46" />
+  <title>Admin Muhadatsah</title>
+  <!-- Tema inline: dijalankan SEBELUM script eksternal apa pun agar tema
          langsung terpasang tanpa kedipan (FOUC) dan tetap berfungsi walau CDN
          gagal dimuat. Menangani tombol #darkBtn + preferensi sistem. -->
-    <script>
-      (function () {
-        var K = 'muhadatsah_theme',
-          META = { light: '#065f46', dark: '#0c0a09' };
-        function saved() {
-          try {
-            var v = localStorage.getItem(K);
-            return v === 'dark' || v === 'light' ? v : null;
-          } catch (e) {
-            return null;
-          }
+  <script>
+    (function () {
+      var K = 'muhadatsah_theme',
+        META = { light: '#065f46', dark: '#0c0a09' };
+      function saved() {
+        try {
+          var v = localStorage.getItem(K);
+          return v === 'dark' || v === 'light' ? v : null;
+        } catch (e) {
+          return null;
         }
-        function apply(mode) {
-          var d = mode === 'dark';
-          document.documentElement.classList.toggle('dark', d);
-          if (document.body) document.body.classList.toggle('dark', d);
-          document.documentElement.style.colorScheme = mode;
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', d ? META.dark : META.light);
-          var btn = document.getElementById('darkBtn');
-          var icon = btn && btn.querySelector('i');
-          if (icon) {
-            icon.classList.toggle('fa-moon', !d);
-            icon.classList.toggle('fa-sun', d);
-          }
-          if (btn) {
-            btn.setAttribute('aria-pressed', d ? 'true' : 'false');
-            btn.setAttribute('aria-label', d ? 'Aktifkan tema terang' : 'Aktifkan tema gelap');
-          }
+      }
+      function apply(mode) {
+        var d = mode === 'dark';
+        document.documentElement.classList.toggle('dark', d);
+        if (document.body) document.body.classList.toggle('dark', d);
+        document.documentElement.style.colorScheme = mode;
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', d ? META.dark : META.light);
+        var btn = document.getElementById('darkBtn');
+        var icon = btn && btn.querySelector('i');
+        if (icon) {
+          icon.classList.toggle('fa-moon', !d);
+          icon.classList.toggle('fa-sun', d);
         }
-        function mode() {
-          return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        if (btn) {
+          btn.setAttribute('aria-pressed', d ? 'true' : 'false');
+          btn.setAttribute('aria-label', d ? 'Aktifkan tema terang' : 'Aktifkan tema gelap');
         }
-        function toggle() {
-          var next = mode() === 'dark' ? 'light' : 'dark';
-          apply(next);
-          try {
-            localStorage.setItem(K, next);
-          } catch (e) {}
-        }
-        var initial =
-          saved() ||
-          (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light');
-        apply(initial);
-        window.Theme = { applyTheme: apply, toggleTheme: toggle, currentMode: mode };
-        function wire() {
-          apply(mode());
-          var btn = document.getElementById('darkBtn');
-          if (btn) btn.addEventListener('click', toggle);
-        }
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', wire);
-        } else {
-          wire();
-        }
-        if (window.matchMedia) {
-          var mq = window.matchMedia('(prefers-color-scheme: dark)');
-          var onChange = function (e) {
-            if (!saved()) apply(e.matches ? 'dark' : 'light');
-          };
-          if (mq.addEventListener) mq.addEventListener('change', onChange);
-          else if (mq.addListener) mq.addListener(onChange);
-        }
-      })();
-    </script>
-    <script>
-      tailwind = {
-        config: {
-          darkMode: 'class',
-          theme: {
-            extend: {
-              colors: {
-                emeraldDeep: '#062e26',
-                gold: '#c9a227',
-                goldLight: '#f3d27a',
-                cream: '#faf7ef'
-              },
-              fontFamily: {
-                arab: ['Amiri', 'serif'],
-                sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
-              },
-              boxShadow: {
-                soft: '0 20px 60px -20px rgba(6,46,38,.35)'
-              }
+      }
+      function mode() {
+        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      }
+      function toggle() {
+        var next = mode() === 'dark' ? 'light' : 'dark';
+        apply(next);
+        try {
+          localStorage.setItem(K, next);
+        } catch (e) { }
+      }
+      var initial =
+        saved() ||
+        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light');
+      apply(initial);
+      window.Theme = { applyTheme: apply, toggleTheme: toggle, currentMode: mode };
+      function wire() {
+        apply(mode());
+        var btn = document.getElementById('darkBtn');
+        if (btn) btn.addEventListener('click', toggle);
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', wire);
+      } else {
+        wire();
+      }
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var onChange = function (e) {
+          if (!saved()) apply(e.matches ? 'dark' : 'light');
+        };
+        if (mq.addEventListener) mq.addEventListener('change', onChange);
+        else if (mq.addListener) mq.addListener(onChange);
+      }
+    })();
+  </script>
+  <script>
+    tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              emeraldDeep: '#062e26',
+              gold: '#c9a227',
+              goldLight: '#f3d27a',
+              cream: '#faf7ef'
+            },
+            fontFamily: {
+              arab: ['Amiri', 'serif'],
+              sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+            },
+            boxShadow: {
+              soft: '0 20px 60px -20px rgba(6,46,38,.35)'
             }
           }
         }
-      };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- `defer` mencegah perlombaan: SDK diunduh paralel tetapi dieksekusi
+      }
+    };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- `defer` mencegah perlombaan: SDK diunduh paralel tetapi dieksekusi
          setelah dokumen selesai di-parse, jadi selalu siap sebelum tombol
          login admin bisa diklik. Dengan atribut ini, urutan eksekusi
          (SDK -> skrip aplikasi) juga terjamin. -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
-      integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o"
-      crossorigin="anonymous"
-      defer
-    ></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-    <link rel="stylesheet" href="assets/css/style.css" />
-  </head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
+    integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"
+    defer></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
 
-  <body
-    class="font-sans bg-cream text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors admin-body"
-  >
-    <div class="pattern-bg"></div>
+<body class="font-sans bg-cream text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors admin-body">
+  <div class="pattern-bg"></div>
 
-    <div id="loginScreen" class="min-h-screen grid place-items-center px-4 py-12">
-      <div
-        class="max-w-md w-full bg-white/90 backdrop-blur rounded-[28px] border border-emerald-900/10 shadow-soft p-8"
-      >
-        <div class="text-center mb-6">
-          <div
-            class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-br from-emerald-700 to-emerald-950 text-gold font-arab text-3xl grid place-items-center"
-          >
-            م
-          </div>
-          <h1 class="mt-4 text-2xl font-extrabold">Admin Muhadatsah</h1>
-          <p class="mt-2 text-sm text-stone-500">
-            Masuk dengan akun admin Supabase untuk mengelola dialog, kosakata, dan materi belajar.
-          </p>
+  <div id="loginScreen" class="min-h-screen grid place-items-center px-4 py-12">
+    <div class="max-w-md w-full bg-white/90 backdrop-blur rounded-[28px] border border-emerald-900/10 shadow-soft p-8">
+      <div class="text-center mb-6">
+        <div
+          class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-br from-emerald-700 to-emerald-950 text-gold font-arab text-3xl grid place-items-center">
+          م
         </div>
-        <form id="loginForm" class="space-y-4">
-          <div>
-            <label class="block text-sm font-bold mb-2" for="email">Email Admin</label>
-            <input
-              id="email"
-              type="email"
-              class="w-full rounded-2xl border border-stone-200 px-4 py-3 focus:outline-none focus:border-emerald-600"
-              autocomplete="username"
-              placeholder="admin@example.com"
-              required
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-bold mb-2" for="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              autocomplete="current-password"
-              class="w-full rounded-2xl border border-stone-200 px-4 py-3 focus:outline-none focus:border-emerald-600"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-emerald-700 text-white font-bold rounded-2xl px-5 py-3 hover:bg-emerald-800 transition"
-          >
-            Masuk ke Admin
-          </button>
-        </form>
-        <div id="loginMessage" class="mt-4 hidden rounded-xl px-4 py-3 text-sm font-semibold"></div>
+        <h1 class="mt-4 text-2xl font-extrabold">Admin Muhadatsah</h1>
+        <p class="mt-2 text-sm text-stone-500">
+          Masuk dengan akun admin Supabase untuk mengelola dialog, kosakata, dan materi belajar.
+        </p>
       </div>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-bold mb-2" for="email">Email Admin</label>
+          <input id="email" type="email"
+            class="w-full rounded-2xl border border-stone-200 px-4 py-3 focus:outline-none focus:border-emerald-600"
+            autocomplete="username" placeholder="admin@example.com" required />
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-2" for="password">Password</label>
+          <input id="password" type="password" autocomplete="current-password"
+            class="w-full rounded-2xl border border-stone-200 px-4 py-3 focus:outline-none focus:border-emerald-600"
+            placeholder="••••••••" required />
+        </div>
+        <button type="submit"
+          class="w-full bg-emerald-700 text-white font-bold rounded-2xl px-5 py-3 hover:bg-emerald-800 transition">
+          Masuk ke Admin
+        </button>
+      </form>
+      <div id="loginMessage" class="mt-4 hidden rounded-xl px-4 py-3 text-sm font-semibold"></div>
     </div>
+  </div>
 
-    <div id="adminScreen" class="hidden min-h-screen px-4 py-8">
-      <div class="admin-layout max-w-[1440px] mx-auto">
-        <aside class="admin-rail">
-          <div class="admin-brand">
-            <span class="admin-brand-mark">م</span>
-            <div><strong>Muhadatsah</strong><span>Content studio</span></div>
-          </div>
-          <nav class="admin-nav" aria-label="Navigasi admin">
-            <a class="active" href="admin.html"
-              ><i class="fa-solid fa-grid-2"></i><span>Overview</span></a
-            >
-            <a href="admin-dialog.html"><i class="fa-solid fa-comments"></i><span>Dialog</span></a>
-            <a href="admin-lines.html"
-              ><i class="fa-solid fa-align-left"></i><span>Conversation lines</span></a
-            >
-            <a href="admin-vocab.html"
-              ><i class="fa-solid fa-book-open"></i><span>Vocabulary</span></a
-            >
-            <a href="admin-audio.html"><i class="fa-solid fa-headphones"></i><span>Audio</span></a>
-          </nav>
-          <div class="admin-rail-note">
-            <i class="fa-solid fa-circle-info"></i
-            ><span>Kelola materi belajar dengan rapi dan konsisten.</span>
-          </div>
-        </aside>
+  <div id="adminScreen" class="hidden min-h-screen px-4 py-8">
+    <div class="admin-layout max-w-[1440px] mx-auto">
+      <aside class="admin-rail">
+        <div class="admin-brand">
+          <span class="admin-brand-mark">م</span>
+          <div><strong>Muhadatsah</strong><span>Content studio</span></div>
+        </div>
+        <nav class="admin-nav" aria-label="Navigasi admin">
+          <a class="active" href="admin.html"><i class="fa-solid fa-grid-2"></i><span>Overview</span></a>
+          <a href="admin-dialog.html"><i class="fa-solid fa-comments"></i><span>Dialog &amp; Percakapan</span></a>
+          <a href="admin-vocab.html"><i class="fa-solid fa-book-open"></i><span>Vocabulary</span></a>
+        </nav>
+        <div class="admin-rail-note">
+          <i class="fa-solid fa-circle-info"></i><span>Kelola materi belajar dengan rapi dan konsisten.</span>
+        </div>
+      </aside>
 
-        <main class="admin-main">
-          <header id="overview" class="admin-topbar">
+      <main class="admin-main">
+        <header id="overview" class="admin-topbar">
+          <div>
+            <p class="admin-kicker">Workspace / Admin</p>
+            <h2>Content overview</h2>
+            <p class="admin-subtitle">Pantau dan kelola materi Muhadatsah dari satu tempat.</p>
+          </div>
+          <div class="admin-top-actions">
+            <span id="dbBadge" class="admin-status"><span class="admin-status-dot"></span>Status DB</span>
+            <button id="darkBtn" type="button" aria-label="Aktifkan tema gelap" aria-pressed="false" title="Tema gelap"
+              class="admin-logout">
+              <i class="fa-solid fa-moon"></i>
+            </button>
+            <button id="logoutBtn" class="admin-logout">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Logout</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="admin-stats" aria-label="Ringkasan konten">
+          <div class="admin-stat">
+            <span class="admin-stat-icon green"><i class="fa-solid fa-comments"></i></span>
             <div>
-              <p class="admin-kicker">Workspace / Admin</p>
-              <h2>Content overview</h2>
-              <p class="admin-subtitle">Pantau dan kelola materi Muhadatsah dari satu tempat.</p>
+              <span class="admin-stat-label">Total dialog</span><strong id="statDialogs">0</strong>
             </div>
-            <div class="admin-top-actions">
-              <span id="dbBadge" class="admin-status"
-                ><span class="admin-status-dot"></span>Status DB</span
-              >
-              <button
-                id="darkBtn"
-                type="button"
-                aria-label="Aktifkan tema gelap"
-                aria-pressed="false"
-                title="Tema gelap"
-                class="admin-logout"
-              >
-                <i class="fa-solid fa-moon"></i>
-              </button>
-              <button id="logoutBtn" class="admin-logout">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Logout</span>
-              </button>
-            </div>
-          </header>
-
-          <section class="admin-stats" aria-label="Ringkasan konten">
-            <div class="admin-stat">
-              <span class="admin-stat-icon green"><i class="fa-solid fa-comments"></i></span>
-              <div>
-                <span class="admin-stat-label">Total dialog</span
-                ><strong id="statDialogs">0</strong>
-              </div>
-              <small>materi aktif</small>
-            </div>
-            <div class="admin-stat">
-              <span class="admin-stat-icon gold"><i class="fa-solid fa-message"></i></span>
-              <div>
-                <span class="admin-stat-label">Conversation lines</span
-                ><strong id="statLines">0</strong>
-              </div>
-              <small>baris percakapan</small>
-            </div>
-            <div class="admin-stat">
-              <span class="admin-stat-icon blue"><i class="fa-solid fa-book-open"></i></span>
-              <div>
-                <span class="admin-stat-label">Kosakata</span><strong id="statVocabs">0</strong>
-              </div>
-              <small>kata tersimpan</small>
-            </div>
-            <div class="admin-stat admin-stat-highlight">
-              <span class="admin-stat-icon dark"><i class="fa-solid fa-layer-group"></i></span>
-              <div>
-                <span class="admin-stat-label">Dialog aktif</span
-                ><strong id="activeDialogName">-</strong>
-              </div>
-              <small>sedang dipilih</small>
-            </div>
-          </section>
-
-          <div class="grid xl:grid-cols-[1.2fr_0.8fr] gap-6 mt-6">
-            <section
-              id="dialog-section"
-              class="admin-panel bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5"
-            >
-              <div class="admin-panel-heading flex items-center justify-between mb-4">
-                <div>
-                  <p class="admin-section-label">Library</p>
-                  <h3 class="text-xl font-extrabold">Daftar Dialog</h3>
-                </div>
-                <button
-                  id="newDialogBtn"
-                  class="bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-bold"
-                >
-                  <i class="fa-solid fa-plus mr-2"></i>Tambah
-                </button>
-              </div>
-              <div id="dialogList" class="space-y-3"></div>
-            </section>
-
-            <aside
-              class="admin-panel admin-form-panel bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5"
-            >
-              <p class="admin-section-label">Editor</p>
-              <h3 class="text-xl font-extrabold mb-4">Form Dialog</h3>
-              <form id="dialogForm" class="space-y-3">
-                <input id="dialogId" type="hidden" />
-                <div>
-                  <label class="block text-sm font-bold mb-1">Kategori</label>
-                  <select
-                    id="dialogCat"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                  >
-                    <option value="sapaan">Sapaan</option>
-                    <option value="sekolah">Sekolah</option>
-                    <option value="pasar">Pasar</option>
-                    <option value="keluarga">Keluarga</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Icon</label>
-                  <input
-                    id="dialogIcon"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    type="text"
-                    placeholder="fa-comment"
-                    value="fa-comments"
-                    required
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Level</label>
-                  <input
-                    id="dialogLevel"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    type="text"
-                    value="Pemula"
-                    required
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Judul ID</label>
-                  <input
-                    id="dialogTitleId"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    type="text"
-                    required
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Judul EN</label>
-                  <input
-                    id="dialogTitleEn"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    type="text"
-                    required
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Judul AR</label>
-                  <input
-                    id="dialogTitleAr"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2 font-arab"
-                    type="text"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  class="w-full bg-emerald-700 text-white rounded-xl px-4 py-3 font-bold"
-                >
-                  Simpan Dialog
-                </button>
-              </form>
-            </aside>
+            <small>materi aktif</small>
           </div>
-
-          <div class="grid xl:grid-cols-[1.2fr_0.8fr] gap-6 mt-6">
-            <section
-              id="line-section"
-              class="admin-panel bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5"
-            >
-              <div class="admin-panel-heading flex items-center justify-between mb-4">
-                <div>
-                  <p class="admin-section-label">Selected dialog</p>
-                  <h3 class="text-xl font-extrabold">Baris Percakapan</h3>
-                </div>
-                <button
-                  id="newLineBtn"
-                  class="bg-gold text-stone-900 px-4 py-2 rounded-full text-sm font-bold"
-                >
-                  <i class="fa-solid fa-plus mr-2"></i>Tambah Baris
-                </button>
-              </div>
-              <div id="lineList" class="space-y-3"></div>
-            </section>
-
-            <aside
-              class="admin-panel admin-form-panel bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5"
-            >
-              <p class="admin-section-label">Editor</p>
-              <h3 class="text-xl font-extrabold mb-4">Form Baris</h3>
-              <form id="lineForm" class="space-y-3">
-                <input id="lineId" type="hidden" />
-                <div>
-                  <label class="block text-sm font-bold mb-1">Dialog</label>
-                  <select
-                    id="lineDialogId"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                  ></select>
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Urutan</label>
-                  <input
-                    id="linePosition"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    type="number"
-                    min="0"
-                    required
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Speaker</label>
-                  <select
-                    id="lineSpeaker"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                  >
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Arab</label>
-                  <textarea
-                    id="lineAr"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2 font-arab"
-                    rows="2"
-                    required
-                  ></textarea>
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">English</label>
-                  <textarea
-                    id="lineEn"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    rows="2"
-                    required
-                  ></textarea>
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Indonesia</label>
-                  <textarea
-                    id="lineIdn"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    rows="2"
-                    required
-                  ></textarea>
-                </div>
-                <div class="audio-field" data-audio-field>
-                  <label class="block text-sm font-bold mb-1" for="lineAudioAr">Audio Arab</label>
-                  <div class="audio-field-row">
-                    <input
-                      id="lineAudioAr"
-                      class="audio-url-input w-full rounded-xl border-stone-200 px-3 py-2"
-                      type="url"
-                      data-audio-url
-                      placeholder="https://.../arab.mp3"
-                    />
-                    <button
-                      type="button"
-                      class="audio-btn"
-                      data-audio-import
-                      data-audio-prefix="arab"
-                    >
-                      <i class="fa-solid fa-upload"></i>Impor</button
-                    ><button
-                      type="button"
-                      class="audio-btn"
-                      data-audio-library
-                      data-audio-prefix="arab"
-                    >
-                      <i class="fa-solid fa-folder-open"></i>Pustaka
-                    </button>
-                  </div>
-                  <p class="audio-hint">
-                    Impor berkas audio dari komputer (diunggah ke Supabase Storage), pilih dari
-                    pustaka, atau tempel URL https:// langsung.
-                  </p>
-                  <div class="audio-preview" data-audio-preview="lineAudioAr"></div>
-                </div>
-                <div class="audio-field" data-audio-field>
-                  <label class="block text-sm font-bold mb-1" for="lineAudioEn"
-                    >Audio Inggris</label
-                  >
-                  <div class="audio-field-row">
-                    <input
-                      id="lineAudioEn"
-                      class="audio-url-input w-full rounded-xl border-stone-200 px-3 py-2"
-                      type="url"
-                      data-audio-url
-                      placeholder="https://.../english.mp3"
-                    />
-                    <button
-                      type="button"
-                      class="audio-btn"
-                      data-audio-import
-                      data-audio-prefix="english"
-                    >
-                      <i class="fa-solid fa-upload"></i>Impor</button
-                    ><button
-                      type="button"
-                      class="audio-btn"
-                      data-audio-library
-                      data-audio-prefix="english"
-                    >
-                      <i class="fa-solid fa-folder-open"></i>Pustaka
-                    </button>
-                  </div>
-                  <p class="audio-hint">
-                    Impor berkas audio dari komputer (diunggah ke Supabase Storage), pilih dari
-                    pustaka, atau tempel URL https:// langsung.
-                  </p>
-                  <div class="audio-preview" data-audio-preview="lineAudioEn"></div>
-                </div>
-                <button
-                  type="submit"
-                  class="w-full bg-emerald-700 text-white rounded-xl px-4 py-3 font-bold"
-                >
-                  Simpan Baris
-                </button>
-              </form>
-            </aside>
+          <div class="admin-stat">
+            <span class="admin-stat-icon gold"><i class="fa-solid fa-message"></i></span>
+            <div>
+              <span class="admin-stat-label">Conversation lines</span><strong id="statLines">0</strong>
+            </div>
+            <small>baris percakapan</small>
           </div>
+          <div class="admin-stat">
+            <span class="admin-stat-icon blue"><i class="fa-solid fa-book-open"></i></span>
+            <div>
+              <span class="admin-stat-label">Kosakata</span><strong id="statVocabs">0</strong>
+            </div>
+            <small>kata tersimpan</small>
+          </div>
+          <div class="admin-stat admin-stat-highlight">
+            <span class="admin-stat-icon dark"><i class="fa-solid fa-layer-group"></i></span>
+            <div>
+              <span class="admin-stat-label">Dialog aktif</span><strong id="activeDialogName">-</strong>
+            </div>
+            <small>sedang dipilih</small>
+          </div>
+        </section>
 
-          <section
-            id="vocab-section"
-            class="admin-panel mt-6 bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5"
-          >
+        <div class="grid xl:grid-cols-[1.2fr_0.8fr] gap-6 mt-6">
+          <section id="dialog-section"
+            class="admin-panel bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5">
             <div class="admin-panel-heading flex items-center justify-between mb-4">
               <div>
-                <p class="admin-section-label">Knowledge base</p>
-                <h3 class="text-xl font-extrabold">Daftar Kosakata</h3>
+                <p class="admin-section-label">Library</p>
+                <h3 class="text-xl font-extrabold">Daftar Dialog</h3>
               </div>
-              <button
-                id="newVocabBtn"
-                class="bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-bold"
-              >
-                <i class="fa-solid fa-plus mr-2"></i>Tambah Kosakata
+              <button id="newDialogBtn" class="bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-bold">
+                <i class="fa-solid fa-plus mr-2"></i>Tambah
               </button>
             </div>
-            <div class="grid xl:grid-cols-[0.9fr_1.1fr] gap-6">
-              <div id="vocabList" class="space-y-3"></div>
-              <form id="vocabForm" class="space-y-3">
-                <input id="vocabId" type="hidden" />
-                <div>
-                  <label class="block text-sm font-bold mb-1">Arab</label>
-                  <input
-                    id="vocabAr"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2 font-arab"
-                    type="text"
-                    required
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">English</label>
-                  <input
-                    id="vocabEn"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    type="text"
-                    required
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Indonesia</label>
-                  <input
-                    id="vocabIdn"
-                    class="w-full rounded-xl border border-stone-200 px-3 py-2"
-                    type="text"
-                    required
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-bold mb-1">Kategori</label>
-                  <select id="vocabCat" class="w-full rounded-xl border border-stone-200 px-3 py-2">
-                    <option value="sapaan">Sapaan</option>
-                    <option value="sekolah">Sekolah</option>
-                    <option value="pasar">Pasar</option>
-                    <option value="keluarga">Keluarga</option>
-                  </select>
-                </div>
-                <div class="audio-field" data-audio-field>
-                  <label class="block text-sm font-bold mb-1" for="vocabAudioAr">Audio Arab</label>
-                  <div class="audio-field-row">
-                    <input
-                      id="vocabAudioAr"
-                      class="audio-url-input w-full rounded-xl border-stone-200 px-3 py-2"
-                      type="url"
-                      data-audio-url
-                      placeholder="https://.../kosakata.mp3"
-                    />
-                    <button
-                      type="button"
-                      class="audio-btn"
-                      data-audio-import
-                      data-audio-prefix="kosakata"
-                    >
-                      <i class="fa-solid fa-upload"></i>Impor</button
-                    ><button
-                      type="button"
-                      class="audio-btn"
-                      data-audio-library
-                      data-audio-prefix="kosakata"
-                    >
-                      <i class="fa-solid fa-folder-open"></i>Pustaka
-                    </button>
-                  </div>
-                  <p class="audio-hint">
-                    Opsional: pelafalan Arab untuk kosakata ini — impor berkas (mp3/wav/ogg/m4a),
-                    pilih dari pustaka, atau tempel URL https://.
-                  </p>
-                  <div class="audio-preview" data-audio-preview="vocabAudioAr"></div>
-                </div>
-                <button
-                  type="submit"
-                  class="w-full bg-emerald-700 text-white rounded-xl px-4 py-3 font-bold"
-                >
-                  Simpan Kosakata
-                </button>
-              </form>
-            </div>
+            <div id="dialogList" class="space-y-3"></div>
           </section>
-        </main>
-      </div>
-    </div>
 
-    <div id="audioPicker" class="audio-picker hidden" aria-hidden="true" role="dialog">
-      <div class="audio-picker-dialog" role="document">
-        <div class="audio-picker-head">
-          <div>
-            <h3 class="audio-picker-title">Pustaka audio</h3>
-            <p class="audio-picker-sub">Berkas audio yang tersimpan di Supabase Storage.</p>
+          <aside
+            class="admin-panel admin-form-panel bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5">
+            <p class="admin-section-label">Editor</p>
+            <h3 class="text-xl font-extrabold mb-4">Form Dialog</h3>
+            <form id="dialogForm" class="space-y-3">
+              <input id="dialogId" type="hidden" />
+              <div>
+                <label class="block text-sm font-bold mb-1">Kategori</label>
+                <select id="dialogCat" class="w-full rounded-xl border border-stone-200 px-3 py-2">
+                  <option value="sapaan">Sapaan</option>
+                  <option value="sekolah">Sekolah</option>
+                  <option value="pasar">Pasar</option>
+                  <option value="keluarga">Keluarga</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Icon</label>
+                <input id="dialogIcon" class="w-full rounded-xl border border-stone-200 px-3 py-2" type="text"
+                  placeholder="fa-comment" value="fa-comments" required />
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Level</label>
+                <input id="dialogLevel" class="w-full rounded-xl border border-stone-200 px-3 py-2" type="text"
+                  value="Pemula" required />
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Judul ID</label>
+                <input id="dialogTitleId" class="w-full rounded-xl border border-stone-200 px-3 py-2" type="text"
+                  required />
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Judul EN</label>
+                <input id="dialogTitleEn" class="w-full rounded-xl border border-stone-200 px-3 py-2" type="text"
+                  required />
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Judul AR</label>
+                <input id="dialogTitleAr" class="w-full rounded-xl border border-stone-200 px-3 py-2 font-arab"
+                  type="text" required />
+              </div>
+              <button type="submit" class="w-full bg-emerald-700 text-white rounded-xl px-4 py-3 font-bold">
+                Simpan Dialog
+              </button>
+            </form>
+          </aside>
+        </div>
+
+        <div class="grid xl:grid-cols-[1.2fr_0.8fr] gap-6 mt-6">
+          <section id="line-section"
+            class="admin-panel bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5">
+            <div class="admin-panel-heading flex items-center justify-between mb-4">
+              <div>
+                <p class="admin-section-label">Selected dialog</p>
+                <h3 class="text-xl font-extrabold">Baris Percakapan</h3>
+              </div>
+              <button id="newLineBtn" class="bg-gold text-stone-900 px-4 py-2 rounded-full text-sm font-bold">
+                <i class="fa-solid fa-plus mr-2"></i>Tambah Baris
+              </button>
+            </div>
+            <div id="lineList" class="space-y-3"></div>
+          </section>
+
+          <aside
+            class="admin-panel admin-form-panel bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5">
+            <p class="admin-section-label">Editor</p>
+            <h3 class="text-xl font-extrabold mb-4">Form Baris</h3>
+            <form id="lineForm" class="space-y-3">
+              <input id="lineId" type="hidden" />
+              <div>
+                <label class="block text-sm font-bold mb-1">Dialog</label>
+                <select id="lineDialogId" class="w-full rounded-xl border border-stone-200 px-3 py-2"></select>
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Urutan</label>
+                <input id="linePosition" class="w-full rounded-xl border border-stone-200 px-3 py-2" type="number"
+                  min="0" required />
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Speaker</label>
+                <select id="lineSpeaker" class="w-full rounded-xl border border-stone-200 px-3 py-2">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Arab</label>
+                <textarea id="lineAr" class="w-full rounded-xl border border-stone-200 px-3 py-2 font-arab" rows="2"
+                  required></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">English</label>
+                <textarea id="lineEn" class="w-full rounded-xl border border-stone-200 px-3 py-2" rows="2"
+                  required></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Indonesia</label>
+                <textarea id="lineIdn" class="w-full rounded-xl border border-stone-200 px-3 py-2" rows="2"
+                  required></textarea>
+              </div>
+              <button type="submit" class="w-full bg-emerald-700 text-white rounded-xl px-4 py-3 font-bold">
+                Simpan Baris
+              </button>
+            </form>
+          </aside>
+        </div>
+
+        <section id="vocab-section"
+          class="admin-panel mt-6 bg-white border border-emerald-900/10 rounded-[28px] shadow-soft p-5">
+          <div class="admin-panel-heading flex items-center justify-between mb-4">
+            <div>
+              <p class="admin-section-label">Knowledge base</p>
+              <h3 class="text-xl font-extrabold">Daftar Kosakata</h3>
+            </div>
+            <button id="newVocabBtn" class="bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-bold">
+              <i class="fa-solid fa-plus mr-2"></i>Tambah Kosakata
+            </button>
           </div>
-          <button
-            type="button"
-            class="audio-btn audio-btn-icon"
-            data-audio-library-close
-            aria-label="Tutup"
-          >
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-        <div class="audio-picker-search">
-          <input
-            type="search"
-            data-audio-library-search
-            placeholder="Cari nama berkas (kosongkan lalu klik Cari untuk semua)"
-          />
-          <button type="button" class="audio-btn" data-audio-library-searchbtn>
-            <i class="fa-solid fa-magnifying-glass"></i>Cari
-          </button>
-        </div>
-        <p class="audio-library-status" data-audio-library-status></p>
-        <div class="audio-picker-grid" data-audio-library-grid></div>
-        <div class="audio-picker-foot">
-          <span class="audio-library-status">Pilih satu berkas lalu klik “Pakai audio ini”.</span>
-          <button type="button" class="audio-btn audio-btn-primary" data-audio-choose>
-            <i class="fa-solid fa-check"></i>Pakai audio ini
-          </button>
-        </div>
-      </div>
+          <div class="grid xl:grid-cols-[0.9fr_1.1fr] gap-6">
+            <div id="vocabList" class="space-y-3"></div>
+            <form id="vocabForm" class="space-y-3">
+              <input id="vocabId" type="hidden" />
+              <div>
+                <label class="block text-sm font-bold mb-1">Arab</label>
+                <input id="vocabAr" class="w-full rounded-xl border border-stone-200 px-3 py-2 font-arab" type="text"
+                  required />
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">English</label>
+                <input id="vocabEn" class="w-full rounded-xl border border-stone-200 px-3 py-2" type="text" required />
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Indonesia</label>
+                <input id="vocabIdn" class="w-full rounded-xl border border-stone-200 px-3 py-2" type="text" required />
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Kategori</label>
+                <select id="vocabCat" class="w-full rounded-xl border border-stone-200 px-3 py-2">
+                  <option value="sapaan">Sapaan</option>
+                  <option value="sekolah">Sekolah</option>
+                  <option value="pasar">Pasar</option>
+                  <option value="keluarga">Keluarga</option>
+                </select>
+              </div>
+              <button type="submit" class="w-full bg-emerald-700 text-white rounded-xl px-4 py-3 font-bold">
+                Simpan Kosakata
+              </button>
+            </form>
+          </div>
+        </section>
+      </main>
     </div>
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/config.local.js"></script>
-    <!-- reCAPTCHA v3: dimuat hanya bila site key dikonfigurasi -->
-    <script>
-      if (window.MUHADATSAH_RECAPTCHA_SITE_KEY) {
-        document.write(
-          '<script src="https://www.google.com/recaptcha/api.js?render=' +
-            window.MUHADATSAH_RECAPTCHA_SITE_KEY +
-            '"><\/script>'
-        );
-      }
-    </script>
-    <script src="assets/js/security.js"></script>
-    <script src="assets/js/data.js"></script>
-    <script src="assets/js/db.js"></script>
-    <script src="assets/js/admin-audio.js"></script>
-    <script src="assets/js/admin.js"></script>
-  </body>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <!-- reCAPTCHA v3 hanya dimuat bila site key dikonfigurasi. -->
+  <script>
+    if (window.MUHADATSAH_RECAPTCHA_ENABLED && window.MUHADATSAH_RECAPTCHA_SITE_KEY) {
+      document.write(
+        '<script src="https://www.google.com/recaptcha/api.js?render=' +
+        window.MUHADATSAH_RECAPTCHA_SITE_KEY +
+        '"><\/script>'
+      );
+    }
+  </script>
+  <script src="assets/js/security.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+
 </html>

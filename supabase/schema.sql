@@ -36,8 +36,6 @@ create table if not exists dialog_lines (
   idn text not null,
   created_at timestamptz default now()
 );
-alter table dialog_lines add column if not exists audio_ar_url text;
-alter table dialog_lines add column if not exists audio_en_url text;
 create index if not exists idx_lines_dialog on dialog_lines(dialog_id, position);
 
 -- 3. Tabel vocab (kosakata)
@@ -50,15 +48,8 @@ create table if not exists vocab (
     check (cat in ('sapaan','sekolah','pasar','keluarga')),
   created_at timestamptz default now()
 );
-alter table vocab add column if not exists audio_ar_url text;
 
--- 4. Storage bucket untuk file audio (mp3/ogg/wav/m4a)
--- Bucket publik agar audio bisa diputar langsung oleh halaman belajar.
-insert into storage.buckets (id, name, public)
-values ('dialog-audio', 'dialog-audio', true)
-on conflict (id) do nothing;
-
--- 5. Tabel quiz_scores (riwayat nilai kuis + nama pemain)
+-- 4. Tabel quiz_scores (riwayat nilai kuis + nama pemain)
 create table if not exists quiz_scores (
   id bigint generated always as identity primary key,
   player_name text not null default 'Tamu',
@@ -130,29 +121,7 @@ create policy "public insert scores" on quiz_scores for insert
 drop policy if exists "admin delete scores" on quiz_scores;
 create policy "admin delete scores" on quiz_scores for delete using (is_admin_user());
 
--- 7. Storage: siapa pun boleh membaca file audio (bucket publik),
--- tetapi hanya admin (profiles.is_admin = true) yang boleh menambah/menghapus.
-drop policy if exists "public read dialog audio" on storage.objects;
-create policy "public read dialog audio" on storage.objects
-  for select using (bucket_id = 'dialog-audio');
-
-drop policy if exists "admin upload dialog audio" on storage.objects;
-create policy "admin upload dialog audio" on storage.objects
-  for insert to authenticated
-  with check (bucket_id = 'dialog-audio' and is_admin_user());
-
-drop policy if exists "admin update dialog audio" on storage.objects;
-create policy "admin update dialog audio" on storage.objects
-  for update to authenticated
-  using (bucket_id = 'dialog-audio' and is_admin_user())
-  with check (bucket_id = 'dialog-audio' and is_admin_user());
-
-drop policy if exists "admin delete dialog audio" on storage.objects;
-create policy "admin delete dialog audio" on storage.objects
-  for delete to authenticated
-  using (bucket_id = 'dialog-audio' and is_admin_user());
-
--- 8. SEED: 8 dialog + 48 lines + 30 vocab (sama persis dgn data lokal)
+-- 7. SEED: 8 dialog + 48 lines + 30 vocab (sama persis dgn data lokal)
 -- Dialogs
 insert into dialogs (cat, icon, level, title_id, title_en, title_ar)
 values

@@ -20,7 +20,7 @@ function setAccessToken(token) {
 // Ambil access token dari sesi Supabase yang sudah tersimpan di browser.
 // Dipakai oleh halaman admin mana pun saat dimuat, sehingga admin yang
 // sudah login di admin.html tidak diminta login ulang ketika berpindah
-// ke admin-dialog.html / admin-lines.html / admin-vocab.html / admin-audio.html.
+// ke admin-dialog.html / admin-lines.html / admin-vocab.html.
 async function restoreAccessToken() {
   if (!window.supabase || window.SUPABASE_ENABLED !== true) return null;
   if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return null;
@@ -137,9 +137,7 @@ async function dbLoadAll() {
               sp: l.sp,
               ar: l.ar,
               en: l.en,
-              id: l.id,
-              audio_ar_url: l.audio_ar_url || null,
-              audio_en_url: l.audio_en_url || null
+              id: l.id
             };
           })
         };
@@ -150,8 +148,7 @@ async function dbLoadAll() {
           ar: v.ar,
           en: v.en,
           idn: v.id,
-          cat: v.cat,
-          audio_url: v.audio_url || null
+          cat: v.cat
         };
       })
     };
@@ -171,8 +168,6 @@ async function dbLoadAll() {
       ar: l.ar,
       en: l.en,
       id: l.idn,
-      audio_ar_url: l.audio_ar_url,
-      audio_en_url: l.audio_en_url,
       position: l.position
     });
   });
@@ -196,8 +191,7 @@ async function dbLoadAll() {
         ar: v.ar,
         en: v.en,
         idn: v.idn,
-        cat: v.cat,
-        audio_ar_url: v.audio_ar_url || null
+        cat: v.cat
       };
     })
   };
@@ -233,9 +227,7 @@ async function dbCreateLine(l) {
       speaker: l.speaker,
       ar: l.ar,
       en: l.en,
-      idn: l.idn,
-      audio_ar_url: l.audio_ar_url || null,
-      audio_en_url: l.audio_en_url || null
+      idn: l.idn
     }
   ]);
   return rows[0];
@@ -254,8 +246,7 @@ async function dbCreateVocab(v) {
       ar: v.ar,
       en: v.en,
       idn: v.idn,
-      cat: v.cat,
-      audio_ar_url: v.audio_ar_url || null
+      cat: v.cat
     }
   ]);
   return rows[0];

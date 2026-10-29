@@ -12,6 +12,7 @@ var APP_STATE = {
   dialogs: [],
   vocab: [],
   lines: [],
+  source: 'local',
   selectedDialogId: null,
   selectedLineId: null,
   selectedVocabId: null
@@ -100,6 +101,7 @@ function getDialogById(id) {
 // Terapkan hasil load ke APP_STATE + gambar ulang UI.
 function applySource(result) {
   var fallback = { dialogs: window.DIALOGS || [], vocab: window.VOCAB || [] };
+  APP_STATE.source = result && result.source === 'supabase' ? 'supabase' : 'local';
   APP_STATE.dialogs =
     (result && result.dialogs && result.dialogs.length ? result.dialogs : fallback.dialogs) || [];
   APP_STATE.vocab =
@@ -140,13 +142,17 @@ function hydrateFromSource() {
 }
 
 function renderAll() {
+  var canEdit = APP_STATE.source === 'supabase';
+  ['newDialogBtn', 'newLineBtn', 'newVocabBtn'].forEach(function (id) {
+    var button = document.getElementById(id);
+    if (button) button.disabled = !canEdit;
+  });
   renderDialogList();
   renderLineList();
   renderVocabList();
   renderDialogSelector();
   updateAdminStats();
   updateDbBadge();
-  // Halaman studio audio memakai daftar ini untuk memasang audio ke materi.
   if (typeof window.renderStudioAttachOptions === 'function') window.renderStudioAttachOptions();
 }
 
@@ -167,8 +173,8 @@ function updateAdminStats() {
 function updateDbBadge() {
   var badge = document.getElementById('dbBadge');
   if (!badge) return;
-  var live = typeof window.sbOn === 'function' && window.sbOn();
-  badge.textContent = live ? 'Supabase live' : 'Data lokal';
+  var live = APP_STATE.source === 'supabase';
+  badge.textContent = live ? 'Supabase live' : 'Data lokal · baca saja';
   badge.className = live
     ? 'admin-status rounded-full bg-emerald-100 text-emerald-700 px-3 py-2 text-xs font-bold'
     : 'admin-status rounded-full bg-amber-100 text-amber-700 px-3 py-2 text-xs font-bold';
@@ -216,10 +222,14 @@ function renderDialogList() {
           '" class="rounded-full bg-stone-900 px-2.5 py-2 text-[11px] font-bold text-white">Pilih</button>' +
           '<button data-action="edit-dialog" data-id="' +
           esc(dialog.id) +
-          '" class="rounded-full bg-emerald-700 px-2.5 py-2 text-[11px] font-bold text-white">Edit</button>' +
+          '" class="rounded-full bg-emerald-700 px-2.5 py-2 text-[11px] font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed"' +
+          (APP_STATE.source === 'supabase' ? '' : ' disabled') +
+          '>Edit</button>' +
           '<button data-action="delete-dialog" data-id="' +
           esc(dialog.id) +
-          '" class="rounded-full bg-red-600 px-2.5 py-2 text-[11px] font-bold text-white">Hapus</button>' +
+          '" class="rounded-full bg-red-600 px-2.5 py-2 text-[11px] font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed"' +
+          (APP_STATE.source === 'supabase' ? '' : ' disabled') +
+          '>Hapus</button>' +
           '</div>' +
           '</td>' +
           '</tr>'
@@ -332,10 +342,14 @@ function renderLineList() {
           '<td class="px-4 py-3"><div class="flex justify-end gap-2 whitespace-nowrap">' +
           '<button data-action="edit-line" data-id="' +
           esc(line.rowId || line.id) +
-          '" class="rounded-full bg-emerald-700 px-2.5 py-2 text-[11px] font-bold text-white">Edit</button>' +
+          '" class="rounded-full bg-emerald-700 px-2.5 py-2 text-[11px] font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed"' +
+          (APP_STATE.source === 'supabase' && line.rowId ? '' : ' disabled') +
+          '>Edit</button>' +
           '<button data-action="delete-line" data-id="' +
           esc(line.rowId || line.id) +
-          '" class="rounded-full bg-red-600 px-2.5 py-2 text-[11px] font-bold text-white">Hapus</button>' +
+          '" class="rounded-full bg-red-600 px-2.5 py-2 text-[11px] font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed"' +
+          (APP_STATE.source === 'supabase' && line.rowId ? '' : ' disabled') +
+          '>Hapus</button>' +
           '</div></td>' +
           '</tr>'
         );
@@ -368,27 +382,14 @@ function fillLineForm(id) {
   document.getElementById('lineAr').value = line.ar || '';
   document.getElementById('lineEn').value = line.en || '';
   document.getElementById('lineIdn').value = line.idn || '';
-  if (document.getElementById('lineAudioAr'))
-    document.getElementById('lineAudioAr').value = line.audio_ar_url || '';
-  if (document.getElementById('lineAudioEn'))
-    document.getElementById('lineAudioEn').value = line.audio_en_url || '';
-  if (typeof window.updateAudioPreview === 'function') {
-    ['lineAudioAr', 'lineAudioEn'].forEach(function (id) {
-      var input = document.getElementById(id);
-      if (input) window.updateAudioPreview(input);
-    });
-  }
+  var form = document.getElementById('lineForm');
+  if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function clearLineForm() {
   var form = document.getElementById('lineForm');
   if (!form) return;
   form.reset();
-  ['lineAudioAr', 'lineAudioEn'].forEach(function (id) {
-    var input = document.getElementById(id);
-    if (input) input.value = '';
-  });
-  if (typeof window.resetAudioPickers === 'function') window.resetAudioPickers();
   document.getElementById('lineId').value = '';
   document.getElementById('lineSpeaker').value = 'A';
   document.getElementById('lineDialogId').value = String(APP_STATE.selectedDialogId || '');
@@ -461,11 +462,6 @@ function fillVocabForm(id) {
   document.getElementById('vocabEn').value = vocab.en || '';
   document.getElementById('vocabIdn').value = vocab.idn || '';
   document.getElementById('vocabCat').value = vocab.cat || 'sapaan';
-  var vocabAudio = document.getElementById('vocabAudioAr');
-  if (vocabAudio) {
-    vocabAudio.value = vocab.audio_ar_url || '';
-    if (typeof window.updateAudioPreview === 'function') window.updateAudioPreview(vocabAudio);
-  }
 }
 
 function clearVocabForm() {
@@ -473,7 +469,6 @@ function clearVocabForm() {
   if (!form) return;
   form.reset();
   document.getElementById('vocabId').value = '';
-  if (typeof window.resetAudioPickers === 'function') window.resetAudioPickers();
 }
 
 function setLoginScreen(showLogin) {
@@ -497,13 +492,15 @@ async function handleLogin(event) {
     showToast('Email dan password harus diisi.', 'error');
     return;
   }
-  // Hook reCAPTCHA (disiapkan untuk integrasi mendatang).
-  // Jika halaman memuat https://www.google.com/recaptcha/api.js dan menetapkan
-  // window.MUHADATSAH_RECAPTCHA_SITE_KEY, token v3 akan dikirim bersama
-  // kredensial sebagai gotrue_meta_security.captchaToken.
+  // reCAPTCHA hanya dikirim bila secara eksplisit diaktifkan dan berhasil
+  // menghasilkan token untuk site key yang sesuai dengan konfigurasi Supabase.
   var captchaToken = null;
   try {
-    if (window.grecaptcha && window.MUHADATSAH_RECAPTCHA_SITE_KEY) {
+    if (
+      window.MUHADATSAH_RECAPTCHA_ENABLED === true &&
+      window.grecaptcha &&
+      window.MUHADATSAH_RECAPTCHA_SITE_KEY
+    ) {
       captchaToken = await new Promise(function (resolve) {
         window.grecaptcha.ready(function () {
           window.grecaptcha
@@ -561,6 +558,10 @@ function ensureWritable() {
       'Mode data lokal: perubahan tidak disimpan ke server. Aktifkan Supabase di config.js.',
       'error'
     );
+    return false;
+  }
+  if (APP_STATE.source !== 'supabase') {
+    showToast('Data Supabase belum termuat. Mode data lokal hanya bisa dibaca.', 'error');
     return false;
   }
   showToast('Sesi admin tidak valid. Silakan login ulang.', 'error');
@@ -627,21 +628,8 @@ async function saveLine(event) {
     speaker: document.getElementById('lineSpeaker').value === 'B' ? 'B' : 'A',
     ar: document.getElementById('lineAr').value.trim().slice(0, 500),
     en: document.getElementById('lineEn').value.trim().slice(0, 500),
-    idn: document.getElementById('lineIdn').value.trim().slice(0, 500),
-    audio_ar_url: document.getElementById('lineAudioAr').value.trim().slice(0, 1000),
-    audio_en_url: document.getElementById('lineAudioEn').value.trim().slice(0, 1000)
+    idn: document.getElementById('lineIdn').value.trim().slice(0, 500)
   };
-
-  if (
-    (payload.audio_ar_url && !/^https:\/\//i.test(payload.audio_ar_url)) ||
-    (payload.audio_en_url && !/^https:\/\//i.test(payload.audio_en_url))
-  ) {
-    showToast('URL audio harus menggunakan HTTPS.', 'error');
-    return;
-  }
-
-  // Validasi tambahan untuk form yang memakai pemilih audio berdata-branch.
-  if (typeof window.validateAudioPickers === 'function' && !window.validateAudioPickers()) return;
 
   if (!payload.dialog_id || !payload.ar || !payload.en || !payload.idn) {
     showToast('Dialog, teks Arab, English, dan Indonesia wajib diisi.', 'error');
@@ -683,27 +671,17 @@ async function saveVocab(event) {
   event.preventDefault();
   if (!ensureWritable()) return;
   var id = document.getElementById('vocabId').value;
-  var vocabAudioInput = document.getElementById('vocabAudioAr');
   var payload = {
     ar: document.getElementById('vocabAr').value.trim().slice(0, 200),
     en: document.getElementById('vocabEn').value.trim().slice(0, 200),
     idn: document.getElementById('vocabIdn').value.trim().slice(0, 200),
     cat: document.getElementById('vocabCat').value
   };
-  if (vocabAudioInput) payload.audio_ar_url = vocabAudioInput.value.trim().slice(0, 1000);
 
   if (!payload.ar || !payload.en || !payload.idn) {
     showToast('Kosakata Arab, English, dan Indonesia wajib diisi.', 'error');
     return;
   }
-
-  if (payload.audio_ar_url && !/^https:\/\//i.test(payload.audio_ar_url)) {
-    showToast('URL audio harus dimulai dengan https://', 'error');
-    return;
-  }
-
-  // Validasi tambahan untuk form yang memakai pemilih audio berdata-branch.
-  if (typeof window.validateAudioPickers === 'function' && !window.validateAudioPickers()) return;
 
   try {
     if (id) {
@@ -769,8 +747,6 @@ function setupEvents() {
       renderAll();
     });
 
-  // Tombol pengelola audio (import dari komputer / pilih dari pustaka).
-  if (typeof window.setupAudioPickers === 'function') window.setupAudioPickers();
 }
 
 // Tunggu SDK Supabase (script defer) selesai dimuat sebelum boot.
@@ -809,7 +785,7 @@ async function bootAdmin() {
   var loggedIn = await isLoggedIn();
   if (loggedIn) {
     setLoginScreen(false);
-    hydrateFromSource();
+    await hydrateFromSource();
   } else {
     setLoginScreen(true);
   }

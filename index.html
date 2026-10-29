@@ -1,704 +1,508 @@
 <!doctype html>
 <html lang="id" id="htmlRoot">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Muhadatsah — platform belajar percakapan Bahasa Arab & Inggris: dialog, kosakata, audio pelafalan, dan kuis interaktif."
-    />
-    <meta name="theme-color" content="#065f46" />
-    <title>Muhadatsah — Percakapan Bahasa Arab & Inggris</title>
-    <!-- Tema inline: dijalankan SEBELUM script eksternal apa pun agar tema
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Muhadatsah — platform belajar percakapan Bahasa Arab & Inggris: dialog, kosakata, dan kuis interaktif." />
+  <meta name="theme-color" content="#065f46" />
+  <title>Muhadatsah — Percakapan Bahasa Arab & Inggris</title>
+  <!-- Tema inline: dijalankan SEBELUM script eksternal apa pun agar tema
          langsung terpasang tanpa kedipan (FOUC) dan tetap berfungsi walau CDN
          gagal dimuat. Menangani tombol #darkBtn + preferensi sistem. -->
-    <script>
-      (function () {
-        var K = 'muhadatsah_theme',
-          META = { light: '#065f46', dark: '#0c0a09' };
-        function saved() {
-          try {
-            var v = localStorage.getItem(K);
-            return v === 'dark' || v === 'light' ? v : null;
-          } catch (e) {
-            return null;
-          }
+  <script>
+    (function () {
+      var K = 'muhadatsah_theme',
+        META = { light: '#065f46', dark: '#0c0a09' };
+      function saved() {
+        try {
+          var v = localStorage.getItem(K);
+          return v === 'dark' || v === 'light' ? v : null;
+        } catch (e) {
+          return null;
         }
-        function apply(mode) {
-          var d = mode === 'dark';
-          document.documentElement.classList.toggle('dark', d);
-          if (document.body) document.body.classList.toggle('dark', d);
-          document.documentElement.style.colorScheme = mode;
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', d ? META.dark : META.light);
-          var btn = document.getElementById('darkBtn');
-          var icon = btn && btn.querySelector('i');
-          if (icon) {
-            icon.classList.toggle('fa-moon', !d);
-            icon.classList.toggle('fa-sun', d);
-          }
-          if (btn) {
-            btn.setAttribute('aria-pressed', d ? 'true' : 'false');
-            btn.setAttribute('aria-label', d ? 'Aktifkan tema terang' : 'Aktifkan tema gelap');
-          }
+      }
+      function apply(mode) {
+        var d = mode === 'dark';
+        document.documentElement.classList.toggle('dark', d);
+        if (document.body) document.body.classList.toggle('dark', d);
+        document.documentElement.style.colorScheme = mode;
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', d ? META.dark : META.light);
+        var btn = document.getElementById('darkBtn');
+        var icon = btn && btn.querySelector('i');
+        if (icon) {
+          icon.classList.toggle('fa-moon', !d);
+          icon.classList.toggle('fa-sun', d);
         }
-        function mode() {
-          return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        if (btn) {
+          btn.setAttribute('aria-pressed', d ? 'true' : 'false');
+          btn.setAttribute('aria-label', d ? 'Aktifkan tema terang' : 'Aktifkan tema gelap');
         }
-        function toggle() {
-          var next = mode() === 'dark' ? 'light' : 'dark';
-          apply(next);
-          try {
-            localStorage.setItem(K, next);
-          } catch (e) {}
+      }
+      function mode() {
+        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      }
+      function toggle() {
+        var next = mode() === 'dark' ? 'light' : 'dark';
+        apply(next);
+        try {
+          localStorage.setItem(K, next);
+        } catch (e) { }
+      }
+      var initial =
+        saved() ||
+        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light');
+      apply(initial);
+      window.Theme = { applyTheme: apply, toggleTheme: toggle, currentMode: mode };
+      function wire() {
+        apply(mode());
+        var btn = document.getElementById('darkBtn');
+        if (btn) btn.addEventListener('click', toggle);
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', wire);
+      } else {
+        wire();
+      }
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var onChange = function (e) {
+          if (!saved()) apply(e.matches ? 'dark' : 'light');
+        };
+        if (mq.addEventListener) mq.addEventListener('change', onChange);
+        else if (mq.addListener) mq.addListener(onChange);
+      }
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/config.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            emeraldDeep: '#062e26',
+            gold: '#c9a227',
+            goldLight: '#f3d27a',
+            cream: '#faf7ef'
+          },
+          fontFamily: {
+            arab: ['Amiri', 'serif'],
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+          },
+          boxShadow: { soft: '0 20px 60px -20px rgba(6,46,38,.35)' }
         }
-        var initial =
-          saved() ||
-          (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light');
-        apply(initial);
-        window.Theme = { applyTheme: apply, toggleTheme: toggle, currentMode: mode };
-        function wire() {
-          apply(mode());
-          var btn = document.getElementById('darkBtn');
-          if (btn) btn.addEventListener('click', toggle);
-        }
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', wire);
-        } else {
-          wire();
-        }
-        if (window.matchMedia) {
-          var mq = window.matchMedia('(prefers-color-scheme: dark)');
-          var onChange = function (e) {
-            if (!saved()) apply(e.matches ? 'dark' : 'light');
-          };
-          if (mq.addEventListener) mq.addEventListener('change', onChange);
-          else if (mq.addListener) mq.addListener(onChange);
-        }
-      })();
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="assets/js/config.js"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-    <link rel="stylesheet" href="assets/css/style.css" />
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              emeraldDeep: '#062e26',
-              gold: '#c9a227',
-              goldLight: '#f3d27a',
-              cream: '#faf7ef'
-            },
-            fontFamily: {
-              arab: ['Amiri', 'serif'],
-              sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
-            },
-            boxShadow: { soft: '0 20px 60px -20px rgba(6,46,38,.35)' }
-          }
-        }
-      };
-    </script>
-  </head>
-  <body
-    class="font-sans bg-cream text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors antialiased"
-  >
-    <div class="pattern-bg"></div>
+      }
+    };
+  </script>
+</head>
 
-    <header
-      class="sticky top-0 z-50 border-b border-emerald-900/10 bg-white/80 backdrop-blur-xl dark:bg-stone-950/80"
-    >
-      <nav class="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between gap-3">
-          <a href="#beranda" class="flex items-center gap-3">
-            <div
-              class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-950 text-2xl font-bold text-gold shadow-soft font-arab"
-            >
-              م
-            </div>
-            <div>
-              <p class="text-lg font-extrabold leading-none">Muhadatsah</p>
-              <p class="mt-1 text-xs font-medium text-emerald-700 dark:text-goldLight font-arab">
-                مُحَادَثَة • Conversation
-              </p>
-            </div>
-          </a>
+<body class="font-sans bg-cream text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors antialiased">
+  <div class="pattern-bg"></div>
 
-          <div class="hidden items-center gap-1 md:flex">
-            <a
-              href="#beranda"
-              class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
-              data-i18n="nav_home"
-              >Beranda</a
-            >
-            <a
-              href="dialog.html"
-              class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
-              data-i18n="nav_dialog"
-              >Percakapan</a
-            >
-            <a
-              href="kosakata.html"
-              class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
-              data-i18n="nav_vocab"
-              >Kosakata</a
-            >
-            <a
-              href="#kuis"
-              class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
-              data-i18n="nav_quiz"
-              >Kuis</a
-            >
-          </div>
-
-          <div class="flex items-center gap-2">
-            <select
-              id="uiLang"
-              class="cursor-pointer rounded-full border border-emerald-900/10 bg-emerald-700 px-3 py-2 text-sm font-bold text-white shadow-sm outline-none ring-0"
-            >
-              <option value="id">ID</option>
-              <option value="ar">AR</option>
-              <option value="en">EN</option>
-            </select>
-            <button
-              id="darkBtn"
-              type="button"
-              aria-label="Aktifkan tema gelap"
-              aria-pressed="false"
-              title="Tema gelap"
-              class="grid h-10 w-10 place-items-center rounded-full bg-stone-900 text-amber-300 shadow-sm transition hover:scale-105 dark:bg-amber-300 dark:text-stone-900"
-            >
-              <i class="fa-solid fa-moon"></i>
-            </button>
-            <button
-              id="mobileMenuBtn"
-              class="grid h-10 w-10 place-items-center rounded-full border border-emerald-900/10 bg-white text-stone-700 shadow-sm md:hidden dark:bg-stone-900 dark:text-stone-100"
-            >
-              <i class="fa-solid fa-bars"></i>
-            </button>
-          </div>
-        </div>
-
-        <div
-          id="mobileMenu"
-          class="mt-3 hidden rounded-2xl border border-emerald-900/10 bg-white/95 p-3 shadow-soft dark:bg-stone-900/95 md:hidden"
-        >
-          <div class="flex flex-col gap-2">
-            <a
-              href="#beranda"
-              class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 dark:text-stone-200 dark:hover:bg-stone-800"
-              data-i18n="nav_home"
-              >Beranda</a
-            >
-            <a
-              href="dialog.html"
-              class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 dark:text-stone-200 dark:hover:bg-stone-800"
-              data-i18n="nav_dialog"
-              >Percakapan</a
-            >
-            <a
-              href="kosakata.html"
-              class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 dark:text-stone-200 dark:hover:bg-stone-800"
-              data-i18n="nav_vocab"
-              >Kosakata</a
-            >
-            <a
-              href="#kuis"
-              class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 dark:text-stone-200 dark:hover:bg-stone-800"
-              data-i18n="nav_quiz"
-              >Kuis</a
-            >
-          </div>
-        </div>
-      </nav>
-    </header>
-    <section
-      id="beranda"
-      class="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-8 lg:pb-16 lg:pt-16"
-    >
-      <div class="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <div class="reveal visible">
-          <span
-            class="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-4 py-2 text-xs font-bold text-white shadow-sm"
-          >
-            <i class="fa-solid fa-star-and-crescent"></i>
-            <span data-i18n="hero_badge">Belajar Percakapan Arab • English Conversation</span>
-          </span>
-
-          <h1 class="mt-5 space-y-2 text-4xl font-extrabold leading-[1.1] sm:text-5xl lg:text-6xl">
-            <span class="block"
-              >Belajar <span class="text-emerald-700 dark:text-goldLight">Muhadatsah</span></span
-            >
-            <span
-              class="hero-arab block font-arab font-bold text-stone-900 dark:text-white"
-              dir="rtl"
-              lang="ar"
-              >تَعَلَّمِ الْمُحَادَثَةَ</span
-            >
-            <span class="block text-stone-700 dark:text-stone-200"
-              >&amp; <span class="text-gold">Conversation</span></span
-            >
-          </h1>
-
-          <p
-            class="mt-5 max-w-xl text-base leading-7 text-stone-600 dark:text-stone-300 sm:text-lg"
-            data-i18n="hero_desc"
-          >
-            Hafalkan dialog Arab–Inggris–Indonesia, dengarkan pelafalan native dengan audio, kuasai
-            kosakata, dan uji dirimu lewat kuis interaktif.
-          </p>
-
-          <div class="mt-7 flex flex-wrap gap-3">
-            <a
-              href="dialog.html"
-              class="rounded-2xl bg-emerald-700 px-6 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-emerald-800 sm:text-base"
-            >
-              <i class="fa-solid fa-comments mr-2"></i>
-              <span data-i18n="hero_cta1">Mulai Percakapan</span>
-            </a>
-            <a
-              href="#kuis"
-              class="rounded-2xl bg-gold px-6 py-3.5 text-sm font-bold text-stone-900 shadow-soft transition hover:brightness-95 sm:text-base"
-            >
-              <i class="fa-solid fa-gamepad mr-2"></i>
-              <span data-i18n="hero_cta2">Main Kuis</span>
-            </a>
-          </div>
-
-          <div class="relative mt-7">
-            <input
-              id="globalSearch"
-              placeholder="Cari dialog / kosakata… (mis: pasar, market, سلام)"
-              class="w-full rounded-2xl border-2 border-emerald-900/10 bg-white px-5 py-4 pl-12 text-sm font-medium text-stone-700 shadow-sm outline-none transition focus:border-emerald-600 dark:bg-stone-900 dark:text-stone-100 dark:border-stone-700"
-            />
-            <i
-              class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-emerald-700"
-            ></i>
-          </div>
-
-          <div class="mt-6 grid grid-cols-3 gap-3 text-center sm:gap-4">
-            <div
-              class="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-sm dark:bg-stone-900"
-            >
-              <p
-                class="text-2xl font-extrabold text-emerald-700 dark:text-goldLight"
-                id="statDialog"
-              >
-                8
-              </p>
-              <p
-                class="text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500"
-                data-i18n="stat_d"
-              >
-                Dialog
-              </p>
-            </div>
-            <div
-              class="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-sm dark:bg-stone-900"
-            >
-              <p
-                class="text-2xl font-extrabold text-emerald-700 dark:text-goldLight"
-                id="statVocab"
-              >
-                30
-              </p>
-              <p
-                class="text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500"
-                data-i18n="stat_v"
-              >
-                Kosakata
-              </p>
-            </div>
-            <div
-              class="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-sm dark:bg-stone-900"
-            >
-              <p class="text-2xl font-extrabold text-emerald-700 dark:text-goldLight">3</p>
-              <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500">
-                AR • EN • ID
-              </p>
-            </div>
-          </div>
-
+  <header class="sticky top-0 z-50 border-b border-emerald-900/10 bg-white/80 backdrop-blur-xl dark:bg-stone-950/80">
+    <nav class="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between gap-3">
+        <a href="#beranda" class="flex items-center gap-3">
           <div
-            class="mt-4 rounded-2xl border border-emerald-900/10 bg-white p-4 text-left shadow-sm dark:bg-stone-900"
-            aria-label="Jadwal bahasa mingguan"
-          >
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500">
-                  Jadwal bahasa minggu ini
-                </p>
-                <p
-                  id="weeklyLanguage"
-                  class="mt-1 text-lg font-extrabold text-emerald-700 dark:text-goldLight"
-                >
-                  English
-                </p>
-              </div>
-              <i class="fa-solid fa-calendar-days text-xl text-gold"></i>
-            </div>
-            <p
-              id="weeklyDates"
-              class="mt-2 text-sm font-semibold text-stone-600 dark:text-stone-300"
-            >
-              Memuat tanggal...
+            class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-950 text-2xl font-bold text-gold shadow-soft font-arab">
+            م
+          </div>
+          <div>
+            <p class="text-lg font-extrabold leading-none">Muhadatsah</p>
+            <p class="mt-1 text-xs font-medium text-emerald-700 dark:text-goldLight font-arab">
+              مُحَادَثَة • Conversation
+            </p>
+          </div>
+        </a>
+
+        <div class="hidden items-center gap-1 md:flex">
+          <a href="#beranda"
+            class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            data-i18n="nav_home">Beranda</a>
+          <a href="dialog.html"
+            class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            data-i18n="nav_dialog">Percakapan</a>
+          <a href="kosakata.html"
+            class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            data-i18n="nav_vocab">Kosakata</a>
+          <a href="#kuis"
+            class="rounded-full px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-white"
+            data-i18n="nav_quiz">Kuis</a>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <select id="uiLang"
+            class="cursor-pointer rounded-full border border-emerald-900/10 bg-emerald-700 px-3 py-2 text-sm font-bold text-white shadow-sm outline-none ring-0">
+            <option value="id">ID</option>
+            <option value="ar">AR</option>
+            <option value="en">EN</option>
+          </select>
+          <button id="darkBtn" type="button" aria-label="Aktifkan tema gelap" aria-pressed="false" title="Tema gelap"
+            class="grid h-10 w-10 place-items-center rounded-full bg-stone-900 text-amber-300 shadow-sm transition hover:scale-105 dark:bg-amber-300 dark:text-stone-900">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <button id="mobileMenuBtn"
+            class="grid h-10 w-10 place-items-center rounded-full border border-emerald-900/10 bg-white text-stone-700 shadow-sm md:hidden dark:bg-stone-900 dark:text-stone-100">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="mobileMenu"
+        class="mt-3 hidden rounded-2xl border border-emerald-900/10 bg-white/95 p-3 shadow-soft dark:bg-stone-900/95 md:hidden">
+        <div class="flex flex-col gap-2">
+          <a href="#beranda"
+            class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 dark:text-stone-200 dark:hover:bg-stone-800"
+            data-i18n="nav_home">Beranda</a>
+          <a href="dialog.html"
+            class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 dark:text-stone-200 dark:hover:bg-stone-800"
+            data-i18n="nav_dialog">Percakapan</a>
+          <a href="kosakata.html"
+            class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 dark:text-stone-200 dark:hover:bg-stone-800"
+            data-i18n="nav_vocab">Kosakata</a>
+          <a href="#kuis"
+            class="rounded-xl px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-emerald-50 dark:text-stone-200 dark:hover:bg-stone-800"
+            data-i18n="nav_quiz">Kuis</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <section id="beranda" class="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-8 lg:pb-16 lg:pt-16">
+    <div class="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+      <div class="reveal visible">
+        <span
+          class="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-4 py-2 text-xs font-bold text-white shadow-sm">
+          <i class="fa-solid fa-star-and-crescent"></i>
+          <span data-i18n="hero_badge">Belajar Percakapan Arab • English Conversation</span>
+        </span>
+
+        <h1 class="mt-5 space-y-2 text-4xl font-extrabold leading-[1.1] sm:text-5xl lg:text-6xl">
+          <span class="block">Belajar <span class="text-emerald-700 dark:text-goldLight">Muhadatsah</span></span>
+          <span class="hero-arab block font-arab font-bold text-stone-900 dark:text-white" dir="rtl" lang="ar">تَعَلَّمِ
+            الْمُحَادَثَةَ</span>
+          <span class="block text-stone-700 dark:text-stone-200">&amp; <span
+              class="text-gold">Conversation</span></span>
+        </h1>
+
+        <p class="mt-5 max-w-xl text-base leading-7 text-stone-600 dark:text-stone-300 sm:text-lg"
+          data-i18n="hero_desc">
+          Hafalkan dialog Arab–Inggris–Indonesia, kuasai kosakata, dan uji dirimu lewat kuis
+          interaktif.
+        </p>
+
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="dialog.html"
+            class="rounded-2xl bg-emerald-700 px-6 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-emerald-800 sm:text-base">
+            <i class="fa-solid fa-comments mr-2"></i>
+            <span data-i18n="hero_cta1">Mulai Percakapan</span>
+          </a>
+          <a href="#kuis"
+            class="rounded-2xl bg-gold px-6 py-3.5 text-sm font-bold text-stone-900 shadow-soft transition hover:brightness-95 sm:text-base">
+            <i class="fa-solid fa-gamepad mr-2"></i>
+            <span data-i18n="hero_cta2">Main Kuis</span>
+          </a>
+        </div>
+
+        <div class="relative mt-7">
+          <input id="globalSearch" placeholder="Cari dialog / kosakata… (mis: pasar, market, سلام)"
+            class="w-full rounded-2xl border-2 border-emerald-900/10 bg-white px-5 py-4 pl-12 text-sm font-medium text-stone-700 shadow-sm outline-none transition focus:border-emerald-600 dark:bg-stone-900 dark:text-stone-100 dark:border-stone-700" />
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-emerald-700"></i>
+        </div>
+
+        <div class="mt-6 grid grid-cols-3 gap-3 text-center sm:gap-4">
+          <div class="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-sm dark:bg-stone-900">
+            <p class="text-2xl font-extrabold text-emerald-700 dark:text-goldLight" id="statDialog">
+              8
+            </p>
+            <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500" data-i18n="stat_d">
+              Dialog
+            </p>
+          </div>
+          <div class="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-sm dark:bg-stone-900">
+            <p class="text-2xl font-extrabold text-emerald-700 dark:text-goldLight" id="statVocab">
+              30
+            </p>
+            <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500" data-i18n="stat_v">
+              Kosakata
+            </p>
+          </div>
+          <div class="rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-sm dark:bg-stone-900">
+            <p class="text-2xl font-extrabold text-emerald-700 dark:text-goldLight">3</p>
+            <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500">
+              AR • EN • ID
             </p>
           </div>
         </div>
 
-        <div class="reveal visible relative">
-          <div
-            class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-800 via-emerald-900 to-stone-950 p-6 text-white shadow-soft sm:p-8"
-          >
-            <div
-              class="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-gold/20 blur-3xl"
-            ></div>
-            <div
-              class="absolute -bottom-12 -left-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl"
-            ></div>
-
-            <div class="relative z-10">
-              <p class="text-center font-arab text-4xl leading-snug sm:text-5xl lg:text-6xl">
-                اَلسَّلَامُ عَلَيْكُمْ
+        <div class="mt-4 rounded-2xl border border-emerald-900/10 bg-white p-4 text-left shadow-sm dark:bg-stone-900"
+          aria-label="Jadwal bahasa mingguan">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500">
+                Jadwal bahasa minggu ini
               </p>
-              <p
-                class="mt-3 text-center text-sm font-bold tracking-[0.2em] text-goldLight uppercase"
-              >
-                Assalamu 'alaikum
+              <p id="weeklyLanguage" class="mt-1 text-lg font-extrabold text-emerald-700 dark:text-goldLight">
+                English
               </p>
-
-              <div
-                class="mt-6 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm sm:p-5"
-              >
-                <div class="flex items-center justify-between gap-3">
-                  <p
-                    class="text-[11px] font-bold uppercase tracking-[0.2em] text-goldLight"
-                    id="dailyLabel"
-                  >
-                    ✨ Kalimat Hari Ini
-                  </p>
-                  <button
-                    onclick="speak('صباح الخير، كيف حالك اليوم؟', 'ar-SA')"
-                    class="grid h-10 w-10 place-items-center rounded-full bg-gold text-stone-900 shadow-sm transition hover:scale-105"
-                  >
-                    <i class="fa-solid fa-volume-high"></i>
-                  </button>
-                </div>
-                <p class="mt-3 text-right font-arab text-2xl leading-relaxed sm:text-3xl">
-                  صَبَاحُ الْخَيْرِ، كَيْفَ حَالُكَ الْيَوْمَ؟
-                </p>
-                <p class="mt-2 text-base font-semibold">Good morning, how are you today?</p>
-                <p class="text-sm text-white/75">Selamat pagi, apa kabarmu hari ini?</p>
-              </div>
-
-              <div class="mt-5 grid grid-cols-2 gap-3 text-sm font-bold">
-                <button
-                  onclick="speak('Peace be upon you, welcome to our lesson', 'en-US')"
-                  class="rounded-xl border border-white/15 bg-white/10 px-3 py-3 transition hover:bg-white/20"
-                >
-                  <i class="fa-solid fa-volume-high mr-2 text-goldLight"></i>EN Audio
-                </button>
-                <button
-                  onclick="speak('السلام عليكم ورحمة الله وبركاته', 'ar-SA')"
-                  class="rounded-xl bg-gold px-3 py-3 text-stone-900 transition hover:brightness-95"
-                >
-                  <i class="fa-solid fa-volume-high mr-2"></i>AR Audio
-                </button>
-              </div>
             </div>
+            <i class="fa-solid fa-calendar-days text-xl text-gold"></i>
           </div>
+          <p id="weeklyDates" class="mt-2 text-sm font-semibold text-stone-600 dark:text-stone-300">
+            Memuat tanggal...
+          </p>
+        </div>
+      </div>
 
-          <div
-            class="float absolute -bottom-14 -left-1 flex items-center gap-3 rounded-2xl border border-emerald-900/10 bg-white px-4 py-3 shadow-soft dark:bg-stone-900 sm:-left-6"
-          >
-            <div
-              class="grid h-11 w-11 place-items-center rounded-xl bg-emerald-100 text-lg text-emerald-700 dark:bg-emerald-900 dark:text-goldLight"
-            >
-              <i class="fa-solid fa-microphone"></i>
+      <div class="reveal visible relative">
+        <div
+          class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-800 via-emerald-900 to-stone-950 p-6 text-white shadow-soft sm:p-8">
+          <div class="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-gold/20 blur-3xl"></div>
+          <div class="absolute -bottom-12 -left-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl"></div>
+
+          <div class="relative z-10">
+            <p class="text-center font-arab text-4xl leading-snug sm:text-5xl lg:text-6xl">
+              اَلسَّلَامُ عَلَيْكُمْ
+            </p>
+            <p class="mt-3 text-center text-sm font-bold tracking-[0.2em] text-goldLight uppercase">
+              Assalamu 'alaikum
+            </p>
+
+            <div class="mt-6 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm sm:p-5">
+              <div class="flex items-center justify-between gap-3">
+                <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-goldLight" id="dailyLabel">
+                  ✨ Kalimat Hari Ini
+                </p>
+                <button type="button"
+                  class="grid h-10 w-10 place-items-center rounded-full bg-gold text-stone-900 shadow-sm transition hover:scale-105"
+                  aria-label="Kalimat hari ini">
+                  <i class="fa-solid fa-quote-right"></i>
+                </button>
+              </div>
+              <p class="mt-3 text-right font-arab text-2xl leading-relaxed sm:text-3xl">
+                صَبَاحُ الْخَيْرِ، كَيْفَ حَالُكَ الْيَوْمَ؟
+              </p>
+              <p class="mt-2 text-base font-semibold">Good morning, how are you today?</p>
+              <p class="text-sm text-white/75">Selamat pagi, apa kabarmu hari ini?</p>
             </div>
-            <div class="text-xs font-bold leading-relaxed">
-              Text-to-Speech<br />
-              <span class="text-emerald-600 dark:text-goldLight">Arab &amp; Inggris</span>
+
+            <div class="mt-5 grid grid-cols-2 gap-3 text-sm font-bold">
+              <button type="button"
+                class="rounded-xl border border-white/15 bg-white/10 px-3 py-3 transition hover:bg-white/20">
+                EN
+              </button>
+              <button type="button" class="rounded-xl bg-gold px-3 py-3 text-stone-900 transition hover:brightness-95">
+                AR
+              </button>
             </div>
           </div>
         </div>
+
+        <div
+          class="float absolute -bottom-14 -left-1 flex items-center gap-3 rounded-2xl border border-emerald-900/10 bg-white px-4 py-3 shadow-soft dark:bg-stone-900 sm:-left-6">
+          <div
+            class="grid h-11 w-11 place-items-center rounded-xl bg-emerald-100 text-lg text-emerald-700 dark:bg-emerald-900 dark:text-goldLight">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+          <div class="text-xs font-bold leading-relaxed">
+            Materi<br />
+            <span class="text-emerald-600 dark:text-goldLight">Arab &amp; Inggris</span>
+          </div>
+        </div>
       </div>
-    </section>
-    <!-- PERCAKAPAN -->
-    <section id="percakapan" class="hidden max-w-7xl mx-auto px-4 py-14">
+    </div>
+  </section>
+  <!-- PERCAKAPAN -->
+  <section id="percakapan" class="hidden max-w-7xl mx-auto px-4 py-14">
+    <div class="reveal flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="font-arab text-gold text-xl font-bold">اَلْحِوَارَات</p>
+        <h2 class="text-3xl md:text-4xl font-extrabold" data-i18n="dlg_title">
+          Dialog Percakapan
+        </h2>
+        <p class="text-stone-500 font-medium" data-i18n="dlg_sub">
+          Klik dialog untuk membuka percakapan lengkap
+        </p>
+      </div>
+      <div class="flex gap-2 text-xs font-bold">
+        <span class="bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 px-4 py-2.5 rounded-full">
+          Teks saja
+        </span>
+      </div>
+    </div>
+    <div id="catTabs" class="reveal mt-6 flex gap-2 overflow-x-auto pb-2"></div>
+    <div id="dialogGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+    <!-- MODAL -->
+    <div id="dlgModal" class="hidden fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+      <div class="max-w-3xl mx-auto bg-white dark:bg-stone-900 rounded-3xl overflow-hidden shadow-soft my-8">
+        <div id="modalHead" class="bg-gradient-to-l from-emerald-800 to-emerald-950 text-white p-6"></div>
+        <div class="p-6">
+          <div class="flex gap-2 mb-4 text-xs font-bold">
+            <button onclick="setScriptMode('all')" id="mAll" class="px-4 py-2 rounded-full bg-emerald-700 text-white">
+              AR • EN • ID
+            </button>
+            <button onclick="setScriptMode('ar')" id="mAr"
+              class="px-4 py-2 rounded-full bg-stone-200 dark:bg-stone-800">
+              Arab saja
+            </button>
+            <button onclick="setScriptMode('en')" id="mEn"
+              class="px-4 py-2 rounded-full bg-stone-200 dark:bg-stone-800">
+              English only
+            </button>
+          </div>
+          <div id="modalBody" class="space-y-3"></div>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <button onclick="closeModal()" class="bg-stone-200 dark:bg-stone-800 font-bold px-5 py-3 rounded-xl text-sm"
+              data-i18n="close">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- KOSAKATA -->
+  <section id="kosakata" class="hidden bg-emerald-950 text-white py-14 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4">
       <div class="reveal flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="font-arab text-gold text-xl font-bold">اَلْحِوَارَات</p>
-          <h2 class="text-3xl md:text-4xl font-extrabold" data-i18n="dlg_title">
-            Dialog Percakapan
+          <p class="font-arab text-goldLight text-xl font-bold">اَلْمُفْرَدَات</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold" data-i18n="voc_title">
+            Tabel Kosakata
           </h2>
-          <p class="text-stone-500 font-medium" data-i18n="dlg_sub">
-            Klik dialog untuk membuka percakapan lengkap + audio per baris
+          <p class="text-white/60 font-medium" data-i18n="voc_sub">
+            Data kosakata yang mudah diperbarui tiap minggu untuk belajar lebih terstruktur
           </p>
         </div>
         <div class="flex gap-2 text-xs font-bold">
-          <button
-            onclick="playAll()"
-            class="bg-stone-900 dark:bg-white dark:text-stone-900 text-white px-4 py-2.5 rounded-full"
-          >
-            <i class="fa-solid fa-play mr-1"></i> Putar Semua</button
-          ><button onclick="stopSpeak()" class="bg-red-600 text-white px-4 py-2.5 rounded-full">
-            <i class="fa-solid fa-stop mr-1"></i> Stop
+          <button onclick="filterVocab('all')" class="vtab tab-active px-4 py-2.5 rounded-full bg-white/10"
+            data-cat="all">
+            Semua</button><button onclick="filterVocab('sapaan')" class="vtab px-4 py-2.5 rounded-full bg-white/10"
+            data-cat="sapaan">
+            Sapaan</button><button onclick="filterVocab('sekolah')" class="vtab px-4 py-2.5 rounded-full bg-white/10"
+            data-cat="sekolah">
+            Sekolah</button><button onclick="filterVocab('pasar')" class="vtab px-4 py-2.5 rounded-full bg-white/10"
+            data-cat="pasar">
+            Pasar</button><button onclick="filterVocab('keluarga')" class="vtab px-4 py-2.5 rounded-full bg-white/10"
+            data-cat="keluarga">
+            Keluarga
           </button>
         </div>
       </div>
-      <div id="catTabs" class="reveal mt-6 flex gap-2 overflow-x-auto pb-2"></div>
-      <div id="dialogGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
-      <!-- MODAL -->
-      <div
-        id="dlgModal"
-        class="hidden fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm p-4 overflow-y-auto"
-      >
+      <div id="vocabGrid" class="mt-8"></div>
+    </div>
+  </section>
+  <!-- KUIS -->
+  <section id="kuis" class="max-w-4xl mx-auto px-4 py-14">
+    <div class="reveal text-center">
+      <p class="font-arab text-gold text-xl font-bold">اَلْاِخْتِبَار</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold" data-i18n="quiz_title">Uji Kemampuanmu</h2>
+      <p class="text-stone-500 font-medium" data-i18n="quiz_sub">
+        10 soal acak Arab → Inggris–Indonesia • skor + award
+      </p>
+    </div>
+    <div
+      class="reveal mt-8 bg-white dark:bg-stone-900 rounded-3xl border-2 border-emerald-900/10 p-6 md:p-10 shadow-soft">
+      <div id="quizStart" class="text-center py-6">
         <div
-          class="max-w-3xl mx-auto bg-white dark:bg-stone-900 rounded-3xl overflow-hidden shadow-soft my-8"
-        >
-          <div
-            id="modalHead"
-            class="bg-gradient-to-l from-emerald-800 to-emerald-950 text-white p-6"
-          ></div>
-          <div class="p-6">
-            <div class="flex gap-2 mb-4 text-xs font-bold">
-              <button
-                onclick="setScriptMode('all')"
-                id="mAll"
-                class="px-4 py-2 rounded-full bg-emerald-700 text-white"
-              >
-                AR • EN • ID
-              </button>
-              <button
-                onclick="setScriptMode('ar')"
-                id="mAr"
-                class="px-4 py-2 rounded-full bg-stone-200 dark:bg-stone-800"
-              >
-                Arab saja
-              </button>
-              <button
-                onclick="setScriptMode('en')"
-                id="mEn"
-                class="px-4 py-2 rounded-full bg-stone-200 dark:bg-stone-800"
-              >
-                English only
-              </button>
-            </div>
-            <div id="modalBody" class="space-y-3"></div>
-            <div class="mt-6 flex flex-wrap gap-2">
-              <button
-                onclick="playDialog()"
-                class="bg-emerald-700 text-white font-bold px-5 py-3 rounded-xl text-sm"
-              >
-                <i class="fa-solid fa-circle-play mr-1"></i>
-                <span data-i18n="play_dlg">Putar Dialog</span>
-              </button>
-              <button
-                onclick="closeModal()"
-                class="bg-stone-200 dark:bg-stone-800 font-bold px-5 py-3 rounded-xl text-sm"
-                data-i18n="close"
-              >
-                Tutup
-              </button>
-            </div>
-          </div>
+          class="w-20 h-20 mx-auto rounded-3xl bg-emerald-100 dark:bg-emerald-900 grid place-items-center text-3xl text-emerald-700 dark:text-goldLight">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <p class="font-extrabold text-xl mt-4">Siap menguji hafalanmu?</p>
+        <div class="flex justify-center gap-2 mt-4 text-sm font-bold">
+          <button onclick="startQuiz(5)" class="px-5 py-2.5 rounded-full bg-stone-200 dark:bg-stone-800">
+            5 Soal</button><button onclick="startQuiz(10)" class="px-5 py-2.5 rounded-full bg-emerald-700 text-white">
+            10 Soal
+          </button>
         </div>
       </div>
-    </section>
-    <!-- KOSAKATA -->
-    <section id="kosakata" class="hidden bg-emerald-950 text-white py-14 relative overflow-hidden">
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="reveal flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p class="font-arab text-goldLight text-xl font-bold">اَلْمُفْرَدَات</p>
-            <h2 class="text-3xl md:text-4xl font-extrabold" data-i18n="voc_title">
-              Tabel Kosakata
-            </h2>
-            <p class="text-white/60 font-medium" data-i18n="voc_sub">
-              Data kosakata yang mudah diperbarui tiap minggu untuk belajar lebih terstruktur
-            </p>
-          </div>
-          <div class="flex gap-2 text-xs font-bold">
-            <button
-              onclick="filterVocab('all')"
-              class="vtab tab-active px-4 py-2.5 rounded-full bg-white/10"
-              data-cat="all"
-            >
-              Semua</button
-            ><button
-              onclick="filterVocab('sapaan')"
-              class="vtab px-4 py-2.5 rounded-full bg-white/10"
-              data-cat="sapaan"
-            >
-              Sapaan</button
-            ><button
-              onclick="filterVocab('sekolah')"
-              class="vtab px-4 py-2.5 rounded-full bg-white/10"
-              data-cat="sekolah"
-            >
-              Sekolah</button
-            ><button
-              onclick="filterVocab('pasar')"
-              class="vtab px-4 py-2.5 rounded-full bg-white/10"
-              data-cat="pasar"
-            >
-              Pasar</button
-            ><button
-              onclick="filterVocab('keluarga')"
-              class="vtab px-4 py-2.5 rounded-full bg-white/10"
-              data-cat="keluarga"
-            >
-              Keluarga
-            </button>
-          </div>
+      <div id="quizPlay" class="hidden">
+        <div class="flex items-center justify-between text-sm font-bold">
+          <span id="qCount">Soal 1/10</span><span id="qScore" class="text-emerald-600">Skor: 0</span>
         </div>
-        <div id="vocabGrid" class="mt-8"></div>
+        <div class="h-2.5 bg-stone-200 dark:bg-stone-800 rounded-full mt-2 overflow-hidden">
+          <div id="qBar" class="h-full bg-gradient-to-r from-emerald-600 to-gold rounded-full transition-all"
+            style="width: 0%"></div>
+        </div>
+        <p class="text-xs font-bold text-stone-400 mt-4 tracking-widest">
+          TERJEMAHKAN KE INDONESIA & INGGRIS
+        </p>
+        <p id="qArab" class="font-arab text-4xl md:text-5xl text-center my-5 leading-relaxed"></p>
+        <div
+          class="mx-auto text-sm font-bold text-emerald-700 dark:text-goldLight border-2 border-dashed border-emerald-300 rounded-full px-5 py-2">
+          Mode teks
+        </div>
+        <div id="qOpts" class="grid sm:grid-cols-2 gap-3 mt-6"></div>
       </div>
-    </section>
-    <!-- KUIS -->
-    <section id="kuis" class="max-w-4xl mx-auto px-4 py-14">
-      <div class="reveal text-center">
-        <p class="font-arab text-gold text-xl font-bold">اَلْاِخْتِبَار</p>
-        <h2 class="text-3xl md:text-4xl font-extrabold" data-i18n="quiz_title">Uji Kemampuanmu</h2>
-        <p class="text-stone-500 font-medium" data-i18n="quiz_sub">
-          10 soal acak Arab → Inggris–Indonesia • skor + award
+      <div id="quizEnd" class="hidden text-center py-4">
+        <p id="qEmoji" class="text-6xl">🏆</p>
+        <p class="font-extrabold text-2xl mt-3" id="qFinal">Skor: 100</p>
+        <p id="qMsg" class="text-stone-500 font-medium mt-1"></p>
+        <form id="quizNameRow" onsubmit="saveQuizScore(event)"
+          class="mt-5 hidden flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <label class="sr-only" for="quizName">Nama untuk papan skor</label>
+          <input id="quizName" type="text" maxlength="40" placeholder="Namamu (untuk papan skor)"
+            class="w-full max-w-xs rounded-2xl border-2 border-emerald-900/10 px-4 py-3 text-sm font-medium outline-none focus:border-emerald-600 dark:border-stone-700 dark:bg-stone-800" />
+          <button id="quizSaveBtn" type="submit"
+            class="rounded-2xl bg-stone-900 px-6 py-3 text-sm font-bold text-white dark:bg-white dark:text-stone-900">
+            Simpan Skor
+          </button>
+        </form>
+        <button onclick="resetQuiz()" class="mt-5 bg-emerald-700 text-white font-bold px-7 py-3 rounded-2xl">
+          <i class="fa-solid fa-rotate-right mr-2"></i>Main Lagi
+        </button>
+      </div>
+      <div id="topScores" class="mt-6 space-y-2"></div>
+    </div>
+  </section>
+  <!-- FOOTER -->
+  <footer class="bg-stone-950 text-white pt-12 pb-6">
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gold grid place-items-center font-arab text-xl font-bold text-stone-900">
+            م
+          </div>
+          <p class="font-extrabold">Muhadatsah</p>
+        </div>
+        <p class="text-sm text-white/60 mt-3">
+          Platform belajar percakapan Bahasa Arab & Inggris dengan flashcard dan kuis interaktif.
         </p>
       </div>
-      <div
-        class="reveal mt-8 bg-white dark:bg-stone-900 rounded-3xl border-2 border-emerald-900/10 p-6 md:p-10 shadow-soft"
-      >
-        <div id="quizStart" class="text-center py-6">
-          <div
-            class="w-20 h-20 mx-auto rounded-3xl bg-emerald-100 dark:bg-emerald-900 grid place-items-center text-3xl text-emerald-700 dark:text-goldLight"
-          >
-            <i class="fa-solid fa-brain"></i>
-          </div>
-          <p class="font-extrabold text-xl mt-4">Siap menguji hafalanmu?</p>
-          <div class="flex justify-center gap-2 mt-4 text-sm font-bold">
-            <button
-              onclick="startQuiz(5)"
-              class="px-5 py-2.5 rounded-full bg-stone-200 dark:bg-stone-800"
-            >
-              5 Soal</button
-            ><button
-              onclick="startQuiz(10)"
-              class="px-5 py-2.5 rounded-full bg-emerald-700 text-white"
-            >
-              10 Soal
-            </button>
-          </div>
-        </div>
-        <div id="quizPlay" class="hidden">
-          <div class="flex items-center justify-between text-sm font-bold">
-            <span id="qCount">Soal 1/10</span
-            ><span id="qScore" class="text-emerald-600">Skor: 0</span>
-          </div>
-          <div class="h-2.5 bg-stone-200 dark:bg-stone-800 rounded-full mt-2 overflow-hidden">
-            <div
-              id="qBar"
-              class="h-full bg-gradient-to-r from-emerald-600 to-gold rounded-full transition-all"
-              style="width: 0%"
-            ></div>
-          </div>
-          <p class="text-xs font-bold text-stone-400 mt-4 tracking-widest">
-            TERJEMAHKAN KE INDONESIA & INGGRIS
-          </p>
-          <p id="qArab" class="font-arab text-4xl md:text-5xl text-center my-5 leading-relaxed"></p>
-          <button
-            onclick="speakQuiz()"
-            class="mx-auto flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-goldLight border-2 border-dashed border-emerald-300 rounded-full px-5 py-2"
-          >
-            <i class="fa-solid fa-volume-high"></i> Dengarkan
-          </button>
-          <div id="qOpts" class="grid sm:grid-cols-2 gap-3 mt-6"></div>
-        </div>
-        <div id="quizEnd" class="hidden text-center py-4">
-          <p id="qEmoji" class="text-6xl">🏆</p>
-          <p class="font-extrabold text-2xl mt-3" id="qFinal">Skor: 100</p>
-          <p id="qMsg" class="text-stone-500 font-medium mt-1"></p>
-          <form
-            id="quizNameRow"
-            onsubmit="saveQuizScore(event)"
-            class="mt-5 hidden flex-col items-center gap-3 sm:flex-row sm:justify-center"
-          >
-            <label class="sr-only" for="quizName">Nama untuk papan skor</label>
-            <input
-              id="quizName"
-              type="text"
-              maxlength="40"
-              placeholder="Namamu (untuk papan skor)"
-              class="w-full max-w-xs rounded-2xl border-2 border-emerald-900/10 px-4 py-3 text-sm font-medium outline-none focus:border-emerald-600 dark:border-stone-700 dark:bg-stone-800"
-            />
-            <button
-              id="quizSaveBtn"
-              type="submit"
-              class="rounded-2xl bg-stone-900 px-6 py-3 text-sm font-bold text-white dark:bg-white dark:text-stone-900"
-            >
-              Simpan Skor
-            </button>
-          </form>
-          <button
-            onclick="resetQuiz()"
-            class="mt-5 bg-emerald-700 text-white font-bold px-7 py-3 rounded-2xl"
-          >
-            <i class="fa-solid fa-rotate-right mr-2"></i>Main Lagi
-          </button>
-        </div>
-        <div id="topScores" class="mt-6 space-y-2"></div>
-      </div>
-    </section>
-    <!-- FOOTER -->
-    <footer class="bg-stone-950 text-white pt-12 pb-6">
-      <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
-        <div>
-          <div class="flex items-center gap-3">
-            <div
-              class="w-10 h-10 rounded-xl bg-gold grid place-items-center font-arab text-xl font-bold text-stone-900"
-            >
-              م
-            </div>
-            <p class="font-extrabold">Muhadatsah</p>
-          </div>
-          <p class="text-sm text-white/60 mt-3">
-            Platform belajar percakapan Bahasa Arab & Inggris dengan audio, flashcard, dan kuis
-            interaktif.
-          </p>
-        </div>
-        <div class="text-sm">
-          <p class="font-bold text-goldLight mb-3">NAVIGASI</p>
-          <div class="grid gap-2 text-white/70 font-medium">
-            <a href="#beranda">Beranda</a><a href="dialog.html">Percakapan</a
-            ><a href="kosakata.html">Kosakata</a><a href="#kuis">Kuis</a>
-          </div>
-        </div>
-        <div class="text-sm">
-          <p class="font-bold text-goldLight mb-3">TIPS BELAJAR</p>
-          <p class="text-white/60">
-            Dengarkan → Ucapkan keras-keras → Hafalkan 5 kosakata/hari → Uji dengan kuis. Konsisten
-            15 menit setiap hari!
-          </p>
+      <div class="text-sm">
+        <p class="font-bold text-goldLight mb-3">NAVIGASI</p>
+        <div class="grid gap-2 text-white/70 font-medium">
+          <a href="#beranda">Beranda</a><a href="dialog.html">Percakapan</a><a href="kosakata.html">Kosakata</a><a
+            href="#kuis">Kuis</a>
         </div>
       </div>
-      <p class="text-center text-xs text-white/40 mt-10">
-        © 2026 Muhadatsah • Dibuat dengan ♥ untuk pembelajar bahasa
-      </p>
-    </footer>
-    <!-- config.local.js (opsional, tidak di-commit) memuat kredensial lokal -->
-    <script src="assets/js/security.js"></script>
-    <script src="assets/js/data.js"></script>
-    <script src="assets/js/db.js"></script>
-    <script src="assets/js/app.js"></script>
-  </body>
+      <div class="text-sm">
+        <p class="font-bold text-goldLight mb-3">TIPS BELAJAR</p>
+        <p class="text-white/60">
+          Dengarkan → Ucapkan keras-keras → Hafalkan 5 kosakata/hari → Uji dengan kuis. Konsisten
+          15 menit setiap hari!
+        </p>
+      </div>
+    </div>
+    <p class="text-center text-xs text-white/40 mt-10">
+      © 2026 Muhadatsah • Dibuat dengan ♥ untuk pembelajar bahasa
+    </p>
+  </footer>
+  <!-- config.local.js (opsional, tidak di-commit) memuat kredensial lokal -->
+  <script src="assets/js/security.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+
 </html>

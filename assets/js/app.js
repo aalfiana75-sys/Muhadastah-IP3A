@@ -1,4 +1,4 @@
-/* global window, document, speechSynthesis, SpeechSynthesisUtterance, IntersectionObserver, DIALOGS, VOCAB, I18N */
+/* global window, document, IntersectionObserver, DIALOGS, VOCAB, I18N */
 var curCat = 'all',
   curDlg = null,
   scriptMode = 'all',
@@ -60,23 +60,6 @@ function renderWeeklyLanguage() {
   current.textContent = englishThisWeek ? 'English' : 'Arab';
   currentDates.textContent = formatDateRange(start);
 }
-function speak(t, lang) {
-  try {
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(t);
-    u.lang = lang;
-    u.rate = 0.85;
-    if (lang.startsWith('ar')) {
-      const v = speechSynthesis.getVoices().find((v) => v.lang.startsWith('ar'));
-      if (v) u.voice = v;
-    }
-    speechSynthesis.speak(u);
-  } catch (e) {}
-}
-function stopSpeak() {
-  speechSynthesis.cancel();
-  document.querySelectorAll('.dialog-line').forEach((x) => x.classList.remove('active'));
-}
 var CATS = [
   ['all', 'Semua', 'fa-layer-group'],
   ['sapaan', 'Sapaan', 'fa-handshake'],
@@ -124,7 +107,7 @@ function renderDialogs(q = '') {
 <p class="mt-2 font-arab text-[1.9rem] leading-relaxed text-emerald-700 dark:text-goldLight">${esc(d.title.ar)}</p>
 <p class="mt-2 text-sm font-medium text-stone-500 dark:text-stone-300">${esc(d.title.en)}</p>
 <div class="mt-5 flex items-center justify-between gap-3 border-t border-stone-200/80 pt-4 text-xs font-bold text-stone-500 dark:border-stone-700 dark:text-stone-300">
-  <span><i class="fa-solid fa-align-left mr-1"></i>${d.lines.length} baris • audio</span>
+  <span><i class="fa-solid fa-align-left mr-1"></i>${d.lines.length} baris</span>
   <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1.5 text-emerald-700 dark:bg-emerald-900/35 dark:text-goldLight">Buka <i class="fa-solid fa-arrow-right ml-1"></i></span>
 </div>
 </div>`
@@ -138,7 +121,6 @@ function openDlg(id) {
   document.body.style.overflow = 'hidden';
 }
 function closeModal() {
-  stopSpeak();
   $('dlgModal').classList.add('hidden');
   document.body.style.overflow = '';
 }
@@ -160,63 +142,9 @@ function setScriptMode(m) {
         body += `<p class="font-semibold text-[15px]"><span class="text-emerald-700 dark:text-goldLight font-extrabold">EN:</span> ${esc(l.en)}</p>`;
       if (scriptMode === 'all')
         body += `<p class="text-sm text-stone-500"><span class="font-bold">ID:</span> ${esc(l.id)}</p>`;
-      return `<div class="dialog-line flex gap-3 bg-stone-50 dark:bg-stone-800/60 border-2 border-transparent rounded-2xl p-4" id="line${i}"><div class="w-9 h-9 shrink-0 rounded-full ${l.sp === 'A' ? 'bg-emerald-700' : 'bg-gold text-stone-900'} text-white font-extrabold grid place-items-center text-sm">${esc(l.sp)}</div><div class="flex-1 space-y-1">${body}<div class="flex gap-2 pt-1"><button onclick="speakLine(${i},'ar')" class="text-[11px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-goldLight px-3 py-1.5 rounded-full"><i class="fa-solid fa-volume-high mr-1"></i>AR</button><button onclick="speakLine(${i},'en')" class="text-[11px] font-bold bg-amber-100 dark:bg-stone-700 text-amber-800 dark:text-goldLight px-3 py-1.5 rounded-full"><i class="fa-solid fa-volume-high mr-1"></i>EN</button></div></div></div>`;
+      return `<div class="dialog-line flex gap-3 bg-stone-50 dark:bg-stone-800/60 border-2 border-transparent rounded-2xl p-4" id="line${i}"><div class="w-9 h-9 shrink-0 rounded-full ${l.sp === 'A' ? 'bg-emerald-700' : 'bg-gold text-stone-900'} text-white font-extrabold grid place-items-center text-sm">${esc(l.sp)}</div><div class="flex-1 space-y-1">${body}</div></div>`;
     })
     .join('');
-}
-function speakLine(i, which) {
-  const l = curDlg.lines[i];
-  document.querySelectorAll('.dialog-line').forEach((x) => x.classList.remove('active'));
-  $('line' + i).classList.add('active');
-  $('line' + i).scrollIntoView({ behavior: 'smooth', block: 'center' });
-  var audioUrl = which === 'ar' ? l.audio_ar_url : l.audio_en_url;
-  if (audioUrl && /^https?:\/\//i.test(audioUrl)) {
-    var audio = new Audio(audioUrl);
-    audio.play().catch(function () {
-      speak(which === 'ar' ? l.ar : l.en, which === 'ar' ? 'ar-SA' : 'en-US');
-    });
-    return;
-  }
-  speak(which === 'ar' ? l.ar : l.en, which === 'ar' ? 'ar-SA' : 'en-US');
-}
-function playDialog() {
-  stopSpeak();
-  let i = 0;
-  const next = () => {
-    if (!curDlg || $('dlgModal').classList.contains('hidden')) return;
-    if (i >= curDlg.lines.length) {
-      document.querySelectorAll('.dialog-line').forEach((x) => x.classList.remove('active'));
-      return;
-    }
-    const l = curDlg.lines[i];
-    document.querySelectorAll('.dialog-line').forEach((x) => x.classList.remove('active'));
-    const el = $('line' + i);
-    if (el) {
-      el.classList.add('active');
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-    const u = new SpeechSynthesisUtterance(l.ar);
-    u.lang = 'ar-SA';
-    u.rate = 0.85;
-    u.onend = () => {
-      const u2 = new SpeechSynthesisUtterance(l.en);
-      u2.lang = 'en-US';
-      u2.rate = 0.9;
-      u2.onend = () => {
-        i++;
-        next();
-      };
-      speechSynthesis.speak(u2);
-    };
-    speechSynthesis.speak(u);
-  };
-  next();
-}
-function playAll() {
-  const all = DIALOGS.flatMap((d) => d.lines.map((l) => l.ar));
-  speak(all.slice(0, 6).join('. '), 'ar-SA');
-  const section = document.querySelector('#percakapan');
-  if (section) section.scrollIntoView({ behavior: 'smooth' });
 }
 // VOCAB
 function renderVocab(f = 'all', q = '') {
@@ -244,43 +172,26 @@ function renderVocab(f = 'all', q = '') {
           <th class="px-4 py-3 font-bold">Arab</th>
           <th class="px-4 py-3 font-bold">English</th>
           <th class="px-4 py-3 font-bold">Indonesia</th>
-          <th class="px-4 py-3 font-bold text-right">Audio</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-white/10 bg-white/5">
         ${list
-          .map(
-            (v, i) => `
+      .map(
+        (v, i) => `
           <tr class="align-top transition hover:bg-white/5">
             <td class="px-4 py-3 text-xs font-bold text-goldLight">${i + 1}</td>
             <td class="px-4 py-3"><span class="inline-flex rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/80">${esc(v.cat)}</span></td>
             <td class="px-4 py-3"><p class="font-arab text-2xl leading-relaxed text-white">${esc(v.ar)}</p></td>
             <td class="px-4 py-3 font-medium text-white/90">${esc(v.en)}</td>
             <td class="px-4 py-3 text-white/75">${esc(v.id)}</td>
-            <td class="px-4 py-3">
-              <div class="flex justify-end gap-2">
-                <button data-speak-index="${i}" data-speak-lang="ar-SA" class="speak-btn rounded-full bg-emerald-700 px-2.5 py-2 text-[10px] font-bold text-white"><i class="fa-solid fa-volume-high mr-1"></i>AR</button>
-                <button data-speak-index="${i}" data-speak-lang="en-US" class="speak-btn rounded-full bg-gold px-2.5 py-2 text-[10px] font-bold text-stone-900"><i class="fa-solid fa-volume-high mr-1"></i>EN</button>
-              </div>
-            </td>
           </tr>
         `
-          )
-          .join('')}
+      )
+      .join('')}
       </tbody>
         </table>
      </div>
     </div>`;
-  // Pasang event listener (bukan string inline) agar data tidak pernah
-  // dieksekusi sebagai kode -> aman dari XSS/HTML injection.
-  g.querySelectorAll('.speak-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var item = list[Number(btn.dataset.speakIndex)];
-      if (!item) return;
-      var lang = btn.dataset.speakLang;
-      speak(lang === 'ar-SA' ? item.ar : item.en, lang);
-    });
-  });
 }
 function filterVocab(c) {
   document.querySelectorAll('.vtab').forEach((b) => b.classList.remove('tab-active'));
@@ -298,9 +209,6 @@ function startQuiz(n) {
   $('quizEnd').classList.add('hidden');
   $('quizPlay').classList.remove('hidden');
   showQ();
-}
-function speakQuiz() {
-  speak(quiz.list[quiz.i].ar, 'ar-SA');
 }
 function showQ() {
   const q = quiz.list[quiz.i];
@@ -344,10 +252,8 @@ function answer(o, btn) {
   if (o === correct) {
     quiz.score += Math.round(100 / quiz.n);
     btn.classList.add('!bg-emerald-600', '!text-white');
-    speak('Correct! Excellent!', 'en-US');
   } else {
     btn.classList.add('!bg-red-500', '!text-white');
-    speak('Wrong. Keep learning!', 'en-US');
   }
   setTimeout(() => {
     quiz.i++;
@@ -433,7 +339,7 @@ if ($('uiLang'))
       if (I18N[l][k]) el.textContent = I18N[l][k];
     });
     $('htmlRoot').lang = l;
-    document.querySelectorAll('.font-arab').forEach(() => {});
+    document.querySelectorAll('.font-arab').forEach(() => { });
     renderDialogs($('globalSearch') ? $('globalSearch').value : '');
   });
 if ($('globalSearch'))
@@ -507,13 +413,7 @@ window.I18N = I18N;
 window.openDlg = openDlg;
 window.closeModal = closeModal;
 window.setScriptMode = setScriptMode;
-window.speakLine = speakLine;
-window.playDialog = playDialog;
-window.playAll = playAll;
-window.stopSpeak = stopSpeak;
-window.speak = speak;
 window.startQuiz = startQuiz;
-window.speakQuiz = speakQuiz;
 window.answer = answer;
 window.resetQuiz = resetQuiz;
 window.setCat = setCat;
@@ -522,4 +422,4 @@ window.renderDialogs = renderDialogs;
 window.renderVocab = renderVocab;
 window.renderTop = renderTop;
 window.saveQuizScore = saveQuizScore;
-window.applyTheme = (window.Theme && window.Theme.applyTheme) || function () {};
+window.applyTheme = (window.Theme && window.Theme.applyTheme) || function () { };
